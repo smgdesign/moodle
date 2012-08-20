@@ -614,6 +614,9 @@ class database_session extends session_stub {
                                 break;
                             }
                         }
+                    // If autologin as guest is enabled there is no need to expire the session
+                    } else if (!empty($CFG->autologinguests)) {
+                        $ignoretimeout = true;
                     }
                 }
             }
