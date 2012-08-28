@@ -1461,10 +1461,11 @@ class grade_item extends grade_object {
      * @param string $feedback Optional teacher feedback
      * @param int $feedbackformat A format like FORMAT_PLAIN or FORMAT_HTML
      * @param int $usermodified The ID of the user making the modification
+     * @param int $draftid_editor The ID of the editor draft file area
      * @return bool success
      */
-    public function update_final_grade($userid, $finalgrade=false, $source=NULL, $feedback=false, $feedbackformat=FORMAT_MOODLE, $usermodified=null) {
-        global $USER, $CFG;
+    public function update_final_grade($userid, $finalgrade=false, $source=NULL, $feedback=false, $feedbackformat=FORMAT_MOODLE, $usermodified=null, $draftid_editor=null) {
+        global $USER, $CFG, $DB;
 
         $result = true;
 
@@ -1535,6 +1536,14 @@ class grade_item extends grade_object {
             // no grade change
             return $result;
         }
+
+        if ($result && !is_null($draftid_editor)) {
+            $maxbytes = $DB->get_field('course', 'maxbytes', array('id' => $this->courseid));
+            $grade->feedback = file_save_draft_area_files($draftid_editor, context_course::instance($this->courseid)->id, 'grade', 'feedback',
+                            $grade->id, array('maxsize' => $maxbytes), $grade->feedback);
+            $DB->set_field('grade_grades', 'feedback', $grade->feedback, array('id' => $grade->id));
+        }
+
 
         if (!$result) {
             // something went wrong - better force final grade recalculation

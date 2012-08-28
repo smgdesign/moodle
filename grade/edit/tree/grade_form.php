@@ -105,7 +105,7 @@ class edit_grade_form extends moodleform {
         $mform->disabledIf('locktime', 'gradetype', 'eq', GRADE_TYPE_NONE);
 
         // Feedback format is automatically converted to html if user has enabled editor
-        $feedbackoptions = array('maxfiles'=>0, 'maxbytes'=>0); //TODO: no files here for now, if ever gets implemented use component 'grade' and filearea 'feedback'
+        $feedbackoptions = array('maxfiles'=>EDITOR_UNLIMITED_FILES, 'maxbytes'=>$COURSE->maxbytes);
         $mform->addElement('editor', 'feedback', get_string('feedback', 'grades'), null, $feedbackoptions);
         $mform->addHelpButton('feedback', 'feedback', 'grades');
         $mform->setType('text', PARAM_RAW); // to be cleaned before display, no XSS risk

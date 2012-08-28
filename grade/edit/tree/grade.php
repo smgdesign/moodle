@@ -102,6 +102,8 @@ if (groups_get_course_groupmode($COURSE) == SEPARATEGROUPS and !has_capability('
     }
 }
 
+$draftid_editor = file_get_submitted_draft_itemid('feedback');
+
 $mform = new edit_grade_form(null, array('grade_item'=>$grade_item, 'gpr'=>$gpr));
 
 if ($grade = $DB->get_record('grade_grades', array('itemid' => $grade_item->id, 'userid' => $userid))) {
@@ -156,12 +158,17 @@ if ($grade = $DB->get_record('grade_grades', array('itemid' => $grade_item->id, 
     $grade->oldgrade    = $grade->finalgrade;
     $grade->oldfeedback = $grade->feedback;
 
-    $grade->feedback = array('text'=>$grade->feedback, 'format'=>$grade->feedbackformat);
+    // Replacing @@PLUGINFILE@@ for the draft filearea reference.
+    $grade->feedback = file_prepare_draft_area($draftid_editor, $context->id, 'grade', 'feedback', $grade->id, null, $grade->feedback);
+    $grade->feedback = array('text'=>$grade->feedback, 'format'=>$grade->feedbackformat, 'itemid' => $draftid_editor);
 
     $mform->set_data($grade);
 } else {
     $grade = new stdClass();
-    $grade->feedback = array('text'=>'', 'format'=>FORMAT_HTML);
+
+    // $grade->feedback will be '' here.
+    $grade->feedback = file_prepare_draft_area($draftid_editor, $context->id, 'grade', 'feedback', null);
+    $grade->feedback = array('text'=>$grade->feedback, 'format'=>FORMAT_HTML, 'itemid' => $draftid_editor);
     $mform->set_data(array('itemid'=>$itemid, 'userid'=>$userid, 'locked'=>$grade_item->locked, 'locktime'=>$grade_item->locktime));
 }
 
@@ -202,7 +209,7 @@ if ($mform->is_cancelled()) {
     }
     // update final grade or feedback
     // when we set override grade the first time, it happens here
-    $grade_item->update_final_grade($data->userid, $data->finalgrade, 'editgrade', $data->feedback, $data->feedbackformat);
+    $grade_item->update_final_grade($data->userid, $data->finalgrade, 'editgrade', $data->feedback, $data->feedbackformat, null, $draftid_editor);
 
     $grade_grade = new grade_grade(array('userid'=>$data->userid, 'itemid'=>$grade_item->id), true);
     $grade_grade->grade_item =& $grade_item; // no db fetching

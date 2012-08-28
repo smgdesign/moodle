@@ -402,6 +402,7 @@ function grade_get_grades($courseid, $itemtype, $itemmodule, $iteminstance, $use
                         $grade_grades[$userid]->grade_item =& $grade_item;
 
                         $grade = new stdClass();
+                        $grade->id             = $grade_grades[$userid]->id;
                         $grade->grade          = $grade_grades[$userid]->finalgrade;
                         $grade->locked         = $grade_grades[$userid]->is_locked();
                         $grade->hidden         = $grade_grades[$userid]->is_hidden();
@@ -479,6 +480,7 @@ function grade_get_grades($courseid, $itemtype, $itemmodule, $iteminstance, $use
                         $grade_grades[$userid]->grade_item =& $grade_item;
 
                         $grade = new stdClass();
+                        $grade->id             = $grade_grades[$userid]->id;
                         $grade->grade          = $grade_grades[$userid]->finalgrade;
                         $grade->locked         = $grade_grades[$userid]->is_locked();
                         $grade->hidden         = $grade_grades[$userid]->is_hidden();
