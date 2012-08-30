@@ -71,7 +71,16 @@ class assignment_offline extends assignment_base {
             !$grading_info->items[0]->grades[$feedback->userid]->overridden) {
 
             $submission->grade      = $feedback->xgrade;
-            $submission->submissioncomment    = $feedback->submissioncomment_editor['text'];
+
+            // We use grade_grades id as file itemid, if we don't have it here we'll update later.
+            $firstgrading = !is_numeric($grading_info->items[0]->grades[$feedback->userid]->id) &&
+                ($grading_info->items[0]->grades[$feedback->userid]->id == 0);
+            if ($firstgrading) {
+                $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
+            } else {
+                $submission->submissioncomment = $this->set_submissioncomment_files($feedback->submissioncomment_editor,
+                        $grading_info->items[0]->grades[$feedback->userid]);
+            }
             $submission->teacher    = $USER->id;
             $mailinfo = get_user_preferences('assignment_mailinfo', 0);
             if (!$mailinfo) {
@@ -92,6 +101,23 @@ class assignment_offline extends assignment_base {
 
             // trigger grade event
             $this->update_grade($submission);
+
+            // If it's the first submission grading and we have attachments update the file references to the real file area.
+            if ($firstgrading) {
+
+                $fs = get_file_storage();
+                $usercontext = context_user::instance($USER->id);
+                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $feedback->submissioncomment_editor['itemid'], 'id');
+                if (count($draftfiles) >= 2) {
+
+                    $grading_info = grade_get_grades($this->course->id, 'mod', 'assignment', $this->assignment->id, $feedback->userid);
+                    $submission->submissioncomment = $this->set_submissioncomment_files($feedback->submissioncomment_editor,
+                            $grading_info->items[0]->grades[$feedback->userid]);
+
+                    $DB->update_record('assignment_submissions', $submission);
+                    $this->update_grade($submission);
+                }
+            }
 
             add_to_log($this->course->id, 'assignment', 'update grades',
                        'submissions.php?id='.$this->assignment->id.'&user='.$feedback->userid, $feedback->userid, $this->cm->id);

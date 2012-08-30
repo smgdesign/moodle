@@ -347,7 +347,8 @@ class assignment_base {
         echo '<div class="clearer"></div>';
 
         echo '<div class="comment">';
-        echo $grade->str_feedback;
+        echo file_rewrite_pluginfile_urls($grade->str_feedback, 'pluginfile.php',
+                $this->coursecontext->id, 'grade', 'feedback', $grade->id);
         echo '</div>';
         echo '</tr>';
 
@@ -1442,6 +1443,8 @@ class assignment_base {
                             $locked_overridden = 'overridden';
                         }
 
+                        $final_grade->str_feedback = file_rewrite_pluginfile_urls($final_grade->str_feedback, 'pluginfile.php',
+                                $this->coursecontext->id, 'grade', 'feedback', $final_grade->id);
                         // TODO add here code if advanced grading grade must be reviewed => $auser->status=0
 
                         $picture = $OUTPUT->user_picture($auser);
@@ -1752,7 +1755,17 @@ class assignment_base {
             $grading_info->items[0]->grades[$feedback->userid]->overridden) ) {
 
             $submission->grade      = $feedback->xgrade;
-            $submission->submissioncomment    = $feedback->submissioncomment_editor['text'];
+
+            // We use grade_grades id as file itemid, if we don't have it here we'll update later.
+            $firstgrading = !is_numeric($grading_info->items[0]->grades[$feedback->userid]->id) &&
+                ($grading_info->items[0]->grades[$feedback->userid]->id == 0);
+            if ($firstgrading) {
+                $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
+            } else {
+                $submission->submissioncomment = $this->set_submissioncomment_files($feedback->submissioncomment_editor,
+                        $grading_info->items[0]->grades[$feedback->userid]);
+            }
+
             $submission->teacher    = $USER->id;
             $mailinfo = get_user_preferences('assignment_mailinfo', 0);
             if (!$mailinfo) {
@@ -1774,6 +1787,24 @@ class assignment_base {
             // triger grade event
             $this->update_grade($submission);
 
+            // If it's the first submission grading and we have attachments update the file references to the real file area.
+            if ($firstgrading) {
+
+                // Checking the number of files in the area (. will always be there).
+                $fs = get_file_storage();
+                $usercontext = context_user::instance($USER->id);
+                $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $feedback->submissioncomment_editor['itemid'], 'id');
+                if (count($draftfiles) >= 2) {
+
+                    $grading_info = grade_get_grades($this->course->id, 'mod', 'assignment', $this->assignment->id, $feedback->userid);
+                    $submission->submissioncomment = $this->set_submissioncomment_files($feedback->submissioncomment_editor,
+                            $grading_info->items[0]->grades[$feedback->userid]);
+
+                    $DB->update_record('assignment_submissions', $submission);
+                    $this->update_grade($submission);
+                }
+            }
+
             add_to_log($this->course->id, 'assignment', 'update grades',
                        'submissions.php?id='.$this->cm->id.'&user='.$feedback->userid, $feedback->userid, $this->cm->id);
              if (!is_null($formdata)) {
@@ -1786,6 +1817,23 @@ class assignment_base {
 
         return $submission;
 
+    }
+
+    /**
+     * Stores the draft file into the real file area and updates the submissioncomment text
+     *
+     * @param array $submissioncomment Editor form element
+     * @param stdClass $grading The grading data of the user and the assignment
+     * @return string rewritten text
+     */
+    protected function set_submissioncomment_files($submissioncomment, $grading) {
+        return file_save_draft_area_files($submissioncomment['itemid'],
+            $this->coursecontext->id,
+            'grade',
+            'feedback',
+            $grading->id,
+            array('maxsize' => $this->course->maxbytes),
+            $submissioncomment['text']);
     }
 
     function process_outcomes($userid) {
@@ -2564,7 +2612,11 @@ class assignment_grading_form extends moodleform {
         $mform->addElement('header', 'Feed Back', get_string('feedback', 'grades'));
 
         if ($this->_customdata->gradingdisabled) {
-            $mform->addElement('static', 'disabledfeedback', $this->_customdata->grading_info->items[0]->grades[$this->_customdata->userid]->str_feedback );
+            $courscontext = context_course::instance($this->_customdata->assignment->course);
+            $str_feedback = $this->_customdata->grading_info->items[0]->grades[$this->_customdata->userid]->str_feedback;
+            $grade_gradesid = $this->_customdata->grading_info->items[0]->grades[$this->_customdata->userid]->id;
+            $str_feedback = file_rewrite_pluginfile_urls($str_feedback, 'pluginfile.php', $courscontext->id, 'grade', 'feedback', $grade_gradesid);
+            $mform->addElement('static', 'disabledfeedback', $str_feedback );
         } else {
             // visible elements
 
@@ -2615,13 +2667,22 @@ class assignment_grading_form extends moodleform {
     }
 
     protected function get_editor_options() {
+
+        // Getting the $itemid from the gradebook if it exists
+        if (!empty($this->_customdata->grading_info->items[0]->grades[$this->_customdata->userid]->id)) {
+            $itemid = $this->_customdata->grading_info->items[0]->grades[$this->_customdata->userid]->id;
+        } else {
+            $itemid = null;
+        }
+
         $editoroptions = array();
-        $editoroptions['component'] = 'mod_assignment';
+        $editoroptions['component'] = 'grade';
         $editoroptions['filearea'] = 'feedback';
         $editoroptions['noclean'] = false;
-        $editoroptions['maxfiles'] = 0; //TODO: no files for now, we need to first implement assignment_feedback area, integration with gradebook, files support in quickgrading, etc. (skodak)
+        $editoroptions['maxfiles'] = EDITOR_UNLIMITED_FILES;
         $editoroptions['maxbytes'] = $this->_customdata->maxbytes;
-        $editoroptions['context'] = $this->_customdata->context;
+        $editoroptions['context'] = context_course::instance($this->_customdata->assignment->course);
+        $editoroptions['itemid'] = $itemid;
         return $editoroptions;
     }
 
@@ -2651,7 +2712,7 @@ class assignment_grading_form extends moodleform {
                     break;
         }
 
-        $data = file_prepare_standard_editor($data, 'submissioncomment', $editoroptions, $this->_customdata->context, $editoroptions['component'], $editoroptions['filearea'], $itemid);
+        $data = file_prepare_standard_editor($data, 'submissioncomment', $editoroptions, $editoroptions['context'], $editoroptions['component'], $editoroptions['filearea'], $editoroptions['itemid']);
         return parent::set_data($data);
     }
 

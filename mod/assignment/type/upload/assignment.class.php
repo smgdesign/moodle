@@ -180,7 +180,7 @@ class assignment_upload extends assignment_base {
         echo '<div class="clearer"></div>';
 
         echo '<div class="comment">';
-        echo $grade->str_feedback;
+        echo file_rewrite_pluginfile_urls($grade->str_feedback, 'pluginfile.php', $this->coursecontext->id, 'grade', 'feedback', $grade->id);
         echo '</div>';
         echo '</tr>';
 
