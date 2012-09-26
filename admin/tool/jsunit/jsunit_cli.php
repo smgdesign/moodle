@@ -34,6 +34,5 @@ $jsunit = new tool_jsunit();
 $jsunit->execute();
 
 $output = $PAGE->get_renderer('tool_jsunit');
-
-echo $OUTPUT->header();
 echo $output->render($jsunit);
+
