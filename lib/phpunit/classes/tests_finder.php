@@ -23,6 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Helper class used by phpunit and behat to find components with tests
+ *
+ * @package    core
+ * @category   phpunit
+ * @copyright  2012 Petr Skoda {@link http://skodak.org}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class tests_finder {
 
     /**
@@ -173,7 +181,7 @@ class tests_finder {
                 $regexp = '|'.$sep.'tests'.$sep.'behat'.$sep.'.*\.feature$|';
                 break;
             case 'stepsdefinitions':
-                $regexp = '|'.$sep.'tests'.$sep.'behat'.$sep.'.*\.php$|';
+                $regexp = '|'.$sep.'tests'.$sep.'behat'.$sep.'behat_.*\.php$|';
                 break;
         }
 
