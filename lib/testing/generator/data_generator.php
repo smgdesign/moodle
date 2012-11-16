@@ -382,6 +382,39 @@ EOD;
     }
 
     /**
+     * Create a test manual enrolment
+     * @param array|stdClass $record
+     * @throws coding_exception
+     * @return void
+     */
+    public function create_enrolment($record) {
+        global $DB;
+
+        $record = (array)$record;
+
+        if (empty($record['roleid'])) {
+            throw new coding_exception('role must be present in phpunit_util::create_enrolment() $record');
+        }
+
+        if (!isset($record['userid'])) {
+            throw new coding_exception('user must be present in phpunit_util::create_enrolment() $record');
+        }
+
+        if (!isset($record['courseid'])) {
+            throw new coding_exception('course must be present in phpunit_util::create_enrolment() $record');
+        }
+
+        $plugin = enrol_get_plugin('manual');
+        $instance = $DB->get_record('enrol', array(
+            'courseid' => $record['courseid'],
+            'enrol' => 'manual',
+        ));
+
+        // Enrol the user in the course
+        $plugin->enrol_user($instance, $record['userid'], $record['roleid']);
+    }
+
+    /**
      * Create course section if does not exist yet
      * @param array|stdClass $record must contain 'course' and 'section' attributes
      * @param array|null $options
@@ -473,6 +506,37 @@ EOD;
     }
 
     /**
+     * Create a test group member
+     * @param array|stdClass $record
+     * @throws coding_exception
+     * @return boolean
+     */
+    public function create_group_member($record) {
+        global $DB, $CFG;
+
+        require_once($CFG->dirroot . '/group/lib.php');
+
+        $record = (array)$record;
+
+        if (empty($record['userid'])) {
+            throw new coding_exception('user must be present in phpunit_util::create_group_member() $record');
+        }
+
+        if (!isset($record['groupid'])) {
+            throw new coding_exception('group must be present in phpunit_util::create_group_member() $record');
+        }
+
+        if (!isset($record['component'])) {
+            $record['component'] = null;
+        }
+        if (!isset($record['itemid'])) {
+            $record['itemid'] = 0;
+        }
+
+        return groups_add_member($record['groupid'], $record['userid'], $record['component'], $record['itemid']);
+    }
+
+    /**
      * Create a test grouping for the specified course
      *
      * $record should be either an array or a stdClass containing infomation about the grouping to create.
@@ -513,6 +577,30 @@ EOD;
         $id = groups_create_grouping((object)$record);
 
         return $DB->get_record('groupings', array('id'=>$id));
+    }
+
+    /**
+     * Create a test grouping group
+     * @param array|stdClass $record
+     * @throws coding_exception
+     * @return boolean
+     */
+    public function create_grouping_group($record) {
+        global $DB, $CFG;
+
+        require_once($CFG->dirroot . '/group/lib.php');
+
+        $record = (array)$record;
+
+        if (empty($record['groupingid'])) {
+            throw new coding_exception('grouping must be present in phpunit_util::create_grouping_group() $record');
+        }
+
+        if (!isset($record['groupid'])) {
+            throw new coding_exception('group must be present in phpunit_util::create_group_member() $record');
+        }
+
+        return groups_assign_grouping($record['groupingid'], $record['groupid']);
     }
 
     /**
