@@ -1,0 +1,68 @@
+<?php
+
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Basic authentication steps definitions
+ *
+ * @package    core
+ * @copyright  2012 David Monllaó
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+require_once(__DIR__ . '/../../../lib/behat/behat_base.php');
+
+use Behat\Behat\Context\Step\Given as Given;
+use Behat\Behat\Context\Step\When as When;
+use Behat\Behat\Context\Step\Then as Then;
+
+/**
+ * Log in log out steps definitions
+ *
+ * @package    core
+ * @copyright  2012 David Monllaó
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class behat_auth extends behat_base {
+
+    /**
+     * Logins the user in the system
+     *
+     * There should exists a user with the
+     * $roleshortname value as username and password
+     *
+     * @Given /^I log in as "(?<roleshortname>[^"]*)"$/
+     */
+    public function i_log_in_as($roleshortname) {
+
+        return array(new Given('I am on homepage'),
+            new Given('I follow "Login"'),
+            new Given('I fill in "Username" with "'.$roleshortname.'"'),
+            new Given('I fill in "Password" with "'.$roleshortname.'"'),
+            new Given('I press "Login"'),
+            new Given('I should see "You are logged in as"'));
+    }
+
+    /**
+     * Logs out of the system
+     *
+     * @Given /^I log out$/
+     */
+    public function i_log_out() {
+        return new When('I follow "Logout"');
+    }
+
+}
