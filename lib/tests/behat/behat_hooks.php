@@ -70,6 +70,24 @@ class behat_hooks extends behat_base {
     }
 
     /**
+     * Ensures selenium is running
+     *
+     * Is only executed in scenarios which requires selenium to run,
+     * it returns a direct error message about what's going on
+     *
+     * @BeforeScenario @javascript
+     */
+    public function before_scenario_javascript($event) {
+
+        // Just trying if server responds
+        try {
+            $this->getSession()->executeScript('// empty comment');
+        } catch (Exception $e) {
+            throw new Exception('Selenium server is not running, you need to start it to run tests that involves Javascript. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
+        }
+    }
+
+    /**
      * Checks that all DOM is ready
      *
      * Executed only when running against a browser

@@ -37,7 +37,7 @@ class behat_navigation extends behat_base {
     /**
      * Expands the selected node of the navigation tree that matches the text
      *
-     * @Given /^I expand "(?<nodetext>[^"]*)" node$/
+     * @Given /^I expand "(?P<nodetext>[^"]*)" node$/
      * @param string $nodetext
      */
     public function i_expand_node($nodetext) {

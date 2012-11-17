@@ -92,7 +92,7 @@ class behat_data_generators extends behat_base {
     /**
      * Creates the specified entity. More info in http://docs.moodle.org/dev/Acceptance_testing#Fixtures
      *
-     * @Given /^the following "(?<element>[^"]*)" exists:$/
+     * @Given /^the following "(?P<element>[^"]*)" exists:$/
      *
      * @param string    $elementname The name of the entity to add
      * @param TableNode $data
