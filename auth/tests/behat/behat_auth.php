@@ -39,19 +39,16 @@ use Behat\Behat\Context\Step\Then as Then;
 class behat_auth extends behat_base {
 
     /**
-     * Logins the user in the system
+     * Logs in the user. There should exist a user with the same value as username and password
      *
-     * There should exists a user with the
-     * $roleshortname value as username and password
-     *
-     * @Given /^I log in as "(?<roleshortname>[^"]*)"$/
+     * @Given /^I log in as "(?P<username>[^"]*)"$/
      */
-    public function i_log_in_as($roleshortname) {
+    public function i_log_in_as($username) {
 
         return array(new Given('I am on homepage'),
             new Given('I follow "Login"'),
-            new Given('I fill in "Username" with "'.$roleshortname.'"'),
-            new Given('I fill in "Password" with "'.$roleshortname.'"'),
+            new Given('I fill in "Username" with "'.$username.'"'),
+            new Given('I fill in "Password" with "'.$username.'"'),
             new Given('I press "Login"'),
             new Given('I should see "You are logged in as"'));
     }
