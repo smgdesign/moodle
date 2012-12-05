@@ -10,6 +10,6 @@
         "phpunit/dbUnit": "1.2.*"
     },
     "require-dev": {
-        "moodlehq/behat-extension": "1.0.*@dev"
+        "moodlehq/behat-extension": "1.0.2"
     }
 }
