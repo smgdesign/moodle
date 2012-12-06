@@ -103,13 +103,13 @@ class behat_data_generators extends behat_base {
             throw new PendingException($elementname . ' data generator is not implemented');
         }
 
-        $this->use_moodle_codebase();
-
         $datagenerator = phpunit_util::get_data_generator();
 
         $elementdatagenerator = self::$elements[$elementname]['datagenerator'];
-        $requiredfields = self::$elements[$elementname]['requires'];
-        $switchids = self::$elements[$elementname]['switchids'];
+        $requiredfields = self::$elements[$elementname]['required'];
+        if (!empty(self::$elements[$elementname]['switchids'])) {
+            $switchids = self::$elements[$elementname]['switchids'];
+        }
 
         foreach ($data->getHash() as $elementdata) {
 
@@ -121,15 +121,17 @@ class behat_data_generators extends behat_base {
             }
 
             // Switch from human-friendly references to ids.
-            foreach ($switchids as $element => $field) {
-                $methodname = 'get_' . $element . '_id';
+            if (isset($switchids)) {
+                foreach ($switchids as $element => $field) {
+                    $methodname = 'get_' . $element . '_id';
 
-                // Not all the switch fields are required, default vars will be assigned by data generators.
-                if (isset($elementdata[$element])) {
-                    // Temp $id var to avoid problems when $element == $field.
-                    $id = $this->{$methodname}($elementdata[$element]);
-                    unset($elementdata[$element]);
-                    $elementdata[$field] = $id;
+                    // Not all the switch fields are required, default vars will be assigned by data generators.
+                    if (isset($elementdata[$element])) {
+                        // Temp $id var to avoid problems when $element == $field.
+                        $id = $this->{$methodname}($elementdata[$element]);
+                        unset($elementdata[$element]);
+                        $elementdata[$field] = $id;
+                    }
                 }
             }
 

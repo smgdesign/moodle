@@ -48,14 +48,27 @@ class behat_hooks extends behat_base {
     private $timeout = 10;
 
     /**
+     * Gives access to moodle codebase
+     *
+     * Runs config.php to use moodle codebase, called once per suite
+     *
+     * @BeforeSuite
+     */
+    public static function before_suite($event) {
+        define('BEHAT_RUNNING', 1);
+        define('CLI_SCRIPT', 1);
+
+        require_once(__DIR__ . '/../../../config.php');
+    }
+
+    /**
      * Resets the database
      *
      * @BeforeScenario
      */
     public function before_scenario($event) {
-        global $DB;
+        global $DB, $SESSION;
 
-        $this->use_moodle_codebase();
         phpunit_util::reset_database();
         phpunit_util::reset_dataroot();
 
@@ -67,6 +80,14 @@ class behat_hooks extends behat_base {
         $user->city = 'Perth';
         $user->country = 'AU';
         $DB->update_record('user', $user);
+
+        // Sets maximum debug level.
+        set_config('debug', DEBUG_DEVELOPER);
+
+        session_set_user($user);
+
+        // Avoid some notices / warnings.
+        $SESSION = new stdClass();
     }
 
     /**
@@ -101,7 +122,8 @@ class behat_hooks extends behat_base {
             return;
         }
 
-        // TODO Store and check getSession()->getCurrentUrl() to avoid executing it at every step
+        // Hooks doesn't allows other steps calls.
+        // TODO Store and check a static getSession()->getCurrentUrl() to avoid executing it at every step
         $this->getSession()->wait($this->timeout, '(document.readyState === "complete")');
     }
 

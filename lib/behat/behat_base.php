@@ -38,20 +38,17 @@
 class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
 
     /**
-     * Runs config.php to use moodle codebase functionality
+     * Returns fixed step argument (with \\" replaced back to ").
      *
-     * This method must only be called by steps definitions which
-     * sets up the testing environment (white box testing) never
-     * by steps definitions who are supposed to test the user
-     * interaction with the system
+     * \\ is the chars combination to add when you
+     * want to escape the " character
+     *
+     * @param string $argument
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @return string
      */
-    protected function use_moodle_codebase() {
-
-        define('BEHAT_RUNNING', 1);
-        define('CLI_SCRIPT', 1);
-
-        require_once(__DIR__ . '/../../config.php');
+    protected function fixStepArgument($argument) {
+        return str_replace('\\"', '"', $argument);
     }
-
 }
 
