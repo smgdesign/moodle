@@ -44,9 +44,8 @@ class behat_navigation extends behat_base {
 
         $xpath = "//ul[contains(concat(' ', normalize-space(@class), ' '), ' block_tree ')]
 /descendant::li
-/descendant::ul
-/descendant::li[contains(concat(' ', normalize-space(@class), ' '), ' contains_branch ')]
-/descendant::p[contains(concat(' ', normalize-space(.), ' '), '" . $nodetext . "')]";
+/descendant::p[contains(concat(' ', normalize-space(@class), ' '), ' branch')]
+/descendant::span[contains(concat(' ', normalize-space(.), ' '), '" . $nodetext . "')]";
 
         $node = $this->getSession()->getPage()->find('xpath', $xpath);
         $node->click();
