@@ -107,13 +107,3 @@ Feature: Set up contextual data for tests
     And I select "Group 2 (1)" from "groups"
     And I wait 1 second
     And the "members" select box should contain "Student 2"
-
-  @javascript
-  Scenario: Test open elements
-    Given the following "courses" exists:
-      | fullname | shortname |
-      | Course 1 | C1 |
-    And I log in as "admin"
-    And I follow "Course 1"
-    And I expand "Users" node
-    And I follow "Groups"
