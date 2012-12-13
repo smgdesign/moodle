@@ -41,7 +41,7 @@ class behat_auth extends behat_base {
     /**
      * Logs in the user. There should exist a user with the same value as username and password
      *
-     * @Given /^I log in as "(?P<username>[^"]*)"$/
+     * @Given /^I log in as "(?P<username_string>(?:[^"]|\\")*)"$/
      */
     public function i_log_in_as($username) {
 

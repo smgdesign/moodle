@@ -37,7 +37,7 @@ use Behat\Behat\Event\StepEvent as StepEvent;
  * suite, feature, scenario and step
  *
  * They can not call other steps as part of their process
- * like regular steps definitions does
+ * like regular steps definitions does.
  *
  * @package    core
  * @copyright  2012 David Monllaó
@@ -71,7 +71,6 @@ class behat_hooks extends behat_base {
         if (!tool_behat::is_test_mode_enabled()) {
             throw new Exception('Behat only can run is test mode is enabled');
         }
-
     }
 
     /**
@@ -125,7 +124,7 @@ class behat_hooks extends behat_base {
      */
     public function before_scenario_javascript($event) {
 
-        // Just trying if server responds
+        // Just trying if server responds.
         try {
             $this->getSession()->executeScript('// empty comment');
         } catch (Exception $e) {
