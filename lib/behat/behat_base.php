@@ -43,12 +43,44 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
      * \\ is the chars combination to add when you
      * want to escape the " character
      *
-     * @param string $argument
      * @see Behat\MinkExtension\Context\MinkContext
+     * @param string $argument
      * @return string
      */
     protected function fixStepArgument($argument) {
         return str_replace('\\"', '"', $argument);
     }
+
+    /**
+     * Locates url, based on provided path.
+     * Override to provide custom routing mechanism.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @param string $path
+     * @return string
+     */
+    protected function locatePath($path) {
+        $startUrl = rtrim($this->getMinkParameter('base_url'), '/') . '/';
+        return 0 !== strpos($path, 'http') ? $startUrl . ltrim($path, '/') : $path;
+    }
+
+    /**
+     * Simple preg_match
+     *
+     * @param mixed $expected What to find
+     * @param mixed $in Where to find it
+     * @return boolean
+     */
+    protected function assertContains($expected, $in) {
+
+        $regex   = '/'.preg_quote($expected, '/').'/ui';
+
+        if (!preg_match($regex, $in)) {
+            return false;
+        }
+
+        return true;
+    }
+
 }
 

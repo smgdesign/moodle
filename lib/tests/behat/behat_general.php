@@ -29,6 +29,10 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 /**
  * Cross component steps definitions
  *
+ * Basic web application definitions from MinkExtension and
+ * BehatchExtension. Definitions modified according to our needs
+ * when necessary and including only the ones we need.
+ *
  * @package    core
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,6 +40,89 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 class behat_general extends behat_base {
 
     private $timeout = 10;
+
+    /**
+     * Opens homepage.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @Given /^(?:|I )am on homepage$/
+     * @When /^(?:|I )go to homepage$/
+     */
+    public function i_am_on_homepage() {
+        $this->getSession()->visit($this->locatePath('/'));
+    }
+
+    /**
+     * Presses button with specified id|name|title|alt|value.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @When /^(?:|I )press "(?P<button>(?:[^"]|\\")*)"$/
+     */
+    public function press_button($button) {
+        $button = $this->fixStepArgument($button);
+        $this->getSession()->getPage()->pressButton($button);
+    }
+
+    /**
+     * Clicks link with specified id|title|alt|text.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @When /^(?:|I )follow "(?P<link>(?:[^"]|\\")*)"$/
+     */
+    public function click_link($link) {
+        $link = $this->fixStepArgument($link);
+        $this->getSession()->getPage()->clickLink($link);
+    }
+
+    /**
+     * Fills in form field with specified id|name|label|value.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @When /^(?:|I )fill in "(?P<field>(?:[^"]|\\")*)" with "(?P<value>(?:[^"]|\\")*)"$/
+     */
+    public function fill_field($field, $value) {
+        $field = $this->fixStepArgument($field);
+        $value = $this->fixStepArgument($value);
+        $this->getSession()->getPage()->fillField($field, $value);
+    }
+
+    /**
+     * Selects option in select field with specified id|name|label|value.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @When /^(?:|I )select "(?P<option>(?:[^"]|\\")*)" from "(?P<select>(?:[^"]|\\")*)"$/
+     */
+    public function select_option($select, $option) {
+        $select = $this->fixStepArgument($select);
+        $option = $this->fixStepArgument($option);
+
+        // We add the click event to deal with autosubmit drop down menus.
+        $selectnode = $this->getSession()->getPage()->findField($select);
+        $selectnode->selectOption($option);
+        $selectnode->click();
+    }
+
+    /**
+     * Checks checkbox with specified id|name|label|value.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @When /^(?:|I )check "(?P<option>(?:[^"]|\\")*)"$/
+     */
+    public function check_option($option) {
+        $option = $this->fixStepArgument($option);
+        $this->getSession()->getPage()->checkField($option);
+    }
+
+    /**
+     * Unchecks checkbox with specified id|name|label|value.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @When /^(?:|I )uncheck "(?P<option>(?:[^"]|\\")*)"$/
+     */
+    public function uncheck_option($option) {
+        $option = $this->fixStepArgument($option);
+        $this->getSession()->getPage()->uncheckField($option);
+    }
 
     /**
      * Waits X seconds. Required after an action that requires data from an AJAX petition
@@ -66,9 +153,67 @@ class behat_general extends behat_base {
     public function i_hover($element) {
         $node = $this->getSession()->getPage()->find('css', $element);
         if ($node === null) {
-            throw new ExpectationException('The hovered element "' . $element . '" was not found anywhere in the page');
+            throw new ExpectationException('The hovered element "' . $element . '" was not found anywhere in the page', $this->getSession());
         }
         $node->mouseOver();
+    }
+
+    /**
+     * Checks, that page contains specified text.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)"$/
+     */
+    public function assert_page_contains_text($text) {
+        $this->assertSession()->pageTextContains($this->fixStepArgument($text));
+    }
+
+    /**
+     * Checks, that page doesn't contain specified text.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @Then /^(?:|I )should not see "(?P<text>(?:[^"]|\\")*)"$/
+     */
+    public function assert_page_not_contains_text($text) {
+        $this->assertSession()->pageTextNotContains($this->fixStepArgument($text));
+    }
+
+    /**
+     * Checks, that element with specified CSS contains specified text.
+     *
+     * @Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)" in the "(?P<element>[^"]*)" element$/
+     */
+    public function assert_element_contains_text($element, $text) {
+        $this->assertSession()->elementTextContains('css', $element, $this->fixStepArgument($text));
+    }
+
+    /**
+     * Checks, that element with specified CSS doesn't contain specified text.
+     *
+     * @Then /^(?:|I )should not see "(?P<text>(?:[^"]|\\")*)" in the "(?P<element>[^"]*)" element$/
+     */
+    public function assert_element_not_contains_text($element, $text) {
+        $this->assertSession()->elementTextNotContains('css', $element, $this->fixStepArgument($text));
+    }
+
+    /**
+     * Checks, that checkbox with specified in|name|label|value is checked.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @Then /^the "(?P<checkbox>(?:[^"]|\\")*)" checkbox should be checked$/
+     */
+    public function assert_checkbox_checked($checkbox) {
+        $this->assertSession()->checkboxChecked($checkbox);
+    }
+
+    /**
+     * Checks, that checkbox with specified in|name|label|value is unchecked.
+     *
+     * @see Behat\MinkExtension\Context\MinkContext
+     * @Then /^the "(?P<checkbox>(?:[^"]|\\")*)" checkbox should not be checked$/
+     */
+    public function assert_checkbox_not_checked($checkbox) {
+        $this->assertSession()->checkboxNotChecked($checkbox);
     }
 
     /**
@@ -81,11 +226,11 @@ class behat_general extends behat_base {
     public function the_element_should_be_disabled($element) {
         $node = $this->getSession()->getPage()->find('css', $element);
         if ($node == null) {
-            throw new ExpectationException('There is no "' . $element . '" element');
+            throw new ExpectationException('There is no "' . $element . '" element', $this->getSession());
         }
 
         if (!$node->hasAttribute('disabled')) {
-            throw new ExpectationException('The element "' . $element . '" is not disabled');
+            throw new ExpectationException('The element "' . $element . '" is not disabled', $this->getSession());
         }
     }
 
@@ -99,11 +244,11 @@ class behat_general extends behat_base {
     public function the_element_should_be_enabled($element) {
         $node = $this->getSession()->getPage()->find('css', $element);
         if ($node == null) {
-            throw new ExpectationException('There is no "' . $element . '" element');
+            throw new ExpectationException('There is no "' . $element . '" element', $this->getSession());
         }
 
         if ($node->hasAttribute('disabled')) {
-            throw new ExpectationException('The element "' . $element . '" is not enabled');
+            throw new ExpectationException('The element "' . $element . '" is not enabled', $this->getSession());
         }
     }
 
@@ -122,7 +267,7 @@ class behat_general extends behat_base {
         $optionstext = $this->getSession()->getPage()->findField($select)->getText();
 
         if (!$this->assertContains($option, $optionstext)) {
-            throw new ExpectationException('The ' . $select . ' select box does not contain the ' . $option . ' option');
+            throw new ExpectationException('The ' . $select . ' select box does not contain the ' . $option . ' option', $this->getSession());
         }
     }
 
@@ -141,26 +286,8 @@ class behat_general extends behat_base {
         $optionstext = $this->getSession()->getPage()->findField($select)->getText();
 
         if ($this->assertContains($option, $optionstext)) {
-            throw new ExpectationException('The ' . $select . ' select box contains the ' . $option . ' option');
+            throw new ExpectationException('The ' . $select . ' select box contains the ' . $option . ' option', $this->getSession());
         }
-    }
-
-    /**
-     * Simple preg_match
-     *
-     * @param mixed $expected What to find
-     * @param mixed $in Where to find it
-     * @return boolean
-     */
-    protected function assertContains($expected, $in) {
-
-        $regex   = '/'.preg_quote($expected, '/').'/ui';
-
-        if (!preg_match($regex, $in)) {
-            return false;
-        }
-
-        return true;
     }
 
 }
