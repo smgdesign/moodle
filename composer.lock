@@ -1,5 +1,5 @@
 {
-    "hash": "68834d5ae3d56a7ddc8f1f1a270a9c32",
+    "hash": "f48f723faf238f1e333f261e62f63a14",
     "packages": [
         {
             "name": "phpunit/dbunit",
@@ -901,22 +901,22 @@
         },
         {
             "name": "guzzle/guzzle",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle",
-                "reference": "v3.0.5"
+                "reference": "v3.0.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/guzzle/archive/v3.0.5.zip",
-                "reference": "v3.0.5",
+                "url": "https://github.com/guzzle/guzzle/archive/v3.0.6.zip",
+                "reference": "v3.0.6",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "ext-curl": "*",
-                "symfony/event-dispatcher": "2.1.*"
+                "symfony/event-dispatcher": ">=2.1"
             },
             "replace": {
                 "guzzle/batch": "self.version",
@@ -951,8 +951,13 @@
                 "zend/zend-cache1": "1.12",
                 "phpunit/phpunit": "3.7.*"
             },
-            "time": "2012-11-19 00:15:33",
+            "time": "2012-12-10 05:25:04",
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
             "installation-source": "dist",
             "autoload": {
                 "psr-0": {
@@ -1039,16 +1044,16 @@
         },
         {
             "name": "moodlehq/behat-extension",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dmonllao/moodle-behat-extension",
-                "reference": "v1.0.2"
+                "reference": "v1.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/dmonllao/moodle-behat-extension/archive/v1.0.2.zip",
-                "reference": "v1.0.2",
+                "url": "https://github.com/dmonllao/moodle-behat-extension/archive/v1.0.3.zip",
+                "reference": "v1.0.3",
                 "shasum": ""
             },
             "require": {
@@ -1060,7 +1065,7 @@
                 "behat/mink-goutte-driver": "1.0.3",
                 "behat/mink-selenium2-driver": "1.0.2"
             },
-            "time": "2012-12-05 03:03:44",
+            "time": "2012-12-13 07:32:13",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
