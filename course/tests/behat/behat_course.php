@@ -57,7 +57,7 @@ class behat_course extends behat_base {
     /**
      * Adds the selected activity/resource filling the form data with the specified field/value pairs.
      *
-     * @When /^I add a "(?P<activity_or_resource_name>[^"]*)" to section (?P<section_number>\d+) and I fill the form with:$/
+     * @When /^I add a "(?P<activity_or_resource_string>(?:[^"]|\\")*)" to section "(?P<section_number>\d+)" and I fill the form with:$/
      * @param string $activity The activity name
      * @param string $section The section number
      * @param TableNode $data The activity field/value data
@@ -66,7 +66,7 @@ class behat_course extends behat_base {
 
         // The 'I wait until the page is ready' is just in case.
         return array(
-            new Given('I add a "'.$activity.'" to section '.$section),
+            new Given('I add a "'.$activity.'" to section "'.$section.'"'),
             new Given('I fill the moodle form with:', $data),
             new Given('I press "Save and return to course"')
         );
@@ -75,7 +75,7 @@ class behat_course extends behat_base {
     /**
      * Opens the activity chooser and opens the activity/resource form page.
      *
-     * @Given /^I add a "(?P<activity_or_resource_name>[^"]*)" to section (?P<section_number>\d+)$/
+     * @Given /^I add a "(?P<activity_or_resource_string>(?:[^"]|\\")*)" to section "(?P<section_number>\d+)"$/
      * @param mixed $activity
      * @param mixed $section
      */

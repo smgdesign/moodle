@@ -44,7 +44,7 @@ class behat_forms extends behat_base {
     /**
      * Checks that the form element field have the specified value.
      *
-     * @Then /^the "(?P<field_name>[^"]*)" field should match "(?P<value>[^"]*)" value$/
+     * @Then /^the "(?P<field_string>(?:[^"]|\\")*)" field should match "(?P<value_string>(?:[^"]|\\")*)" value$/
      * @param mixed $locator
      * @param mixed $value
      */

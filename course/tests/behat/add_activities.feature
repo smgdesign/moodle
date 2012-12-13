@@ -20,7 +20,7 @@ Feature: Add activities to courses
     And I log in as "admin"
     And I follow "Course 1"
     When I turn editing mode on
-    And I add a "Database" to section 3 and I fill the form with:
+    And I add a "Database" to section "3" and I fill the form with:
       | Name | Test name |
       | Introduction | Test database description |
       | Required entries | 9 |
@@ -50,7 +50,7 @@ Feature: Add activities to courses
     And I log in as "admin"
     And I follow "Course 1"
     When I turn editing mode on
-    And I add a "Database" to section 3 and I fill the form with:
+    And I add a "Database" to section "3" and I fill the form with:
       | Name | Test name |
     Then I should see "Adding a new"
     And I should see "Required"

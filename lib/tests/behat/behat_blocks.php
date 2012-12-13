@@ -38,7 +38,7 @@ class behat_blocks extends behat_base {
     /**
      * Adds the selected block. Editing mode must be previously enabled
      *
-     * @Given /^I add the "(?P<block_name>[^"]*)" block$/
+     * @Given /^I add the "(?P<block_name_string>(?:[^"]|\\")*)" block$/
      * @param string $blockname
      */
     public function i_add_the_block($blockname) {
