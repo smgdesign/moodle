@@ -105,6 +105,56 @@ class behat_general extends behat_base {
     }
 
     /**
+     * Clicks on the element with specified id|name|label|value
+     *
+     * @Given /^I click on "(?P<element_string>(?:[^"]|\\")*)"$/
+     * @param string $element
+     */
+    public function click_element($locator) {
+        $node = $this->getSession()->getPage()->find('named', array(
+            'link', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)
+        ));
+
+        if ($node == null) {
+            throw new ExpectationException('There is no "' . $element . '" element', $this->getSession());
+        }
+        $node->click();
+    }
+
+    /**
+     * Creates a folder in the specified filepicker with the provided name
+     * @Given /^I create "(?P<folder_string>(?:[^"]|\\")*)" folder in "(?P<filepicker_string>(?:[^"]|\\")*)" filepicker$/
+     * @param mixed $filename
+     * @param mixed $locator
+     */
+    public function i_create_folder_in_filepicker($folder, $locator) {
+
+        // The filepicker is in the parent of the labelled element.
+        $filepickernode = $this->getSession()->getPage()->find('named', array(
+            'label', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)
+        ));
+//        $filepickernode = $this->getSession()->getPage()->findField($locator);
+        if ($filepickernode == null) {
+            throw new ExpectationException('There is no filepicker labelled as ' . $locator, $this->getSession());
+        }
+        $filepickernode = $filepickernode->getParent()->getParent();
+
+        // The create folder a.
+        $foldernode = $filepickernode->find('named', array(
+            'link', $this->getSession()->getSelectorsHandler()->xpathLiteral(get_string('makeafolder', 'moodle'))
+        ));
+        $foldernode->click();
+
+        // Selecting with CSS the class is unique (modal window)
+        $inputnode = $this->getSession()->getPage()->find('css', '.fp-mkdir-dlg > .fp-mkdir-dlg-text > input');
+        if ($inputnode == null) {
+            throw new ExpectationException('There is no input to enter the folder name', $this->getSession());
+        }
+
+        $this->getSession()->getPage()->pressButton(get_string('makeafolder', 'moodle'));
+    }
+
+    /**
      * Checks checkbox with specified id|name|label|value.
      *
      * @see Behat\MinkExtension\Context\MinkContext

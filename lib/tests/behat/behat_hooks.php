@@ -153,4 +153,46 @@ class behat_hooks extends behat_base {
         $this->getSession()->wait($this->timeout, '(document.readyState === "complete")');
     }
 
+    /**
+     * Looks for error or debugging messages
+     *
+     * Scenarios must fail if there is something wrong
+     *
+     * Selenium webdriver does not return info about response headers
+     * so exceptions can not be detected through the status code
+     *
+     * @AfterStep
+     */
+    public function after_step($event) {
+return;
+        $page = $this->getSession()->getPage();
+        $htmlcontent = $page->getContent();
+
+        $errormsgs = array(
+            'php debug message' => 'Call Stack: ',
+            'exception' => 'Debug info:',
+            'debugging message' => 'call to debugging()'
+        );
+
+        foreach ($errormsgs as $type => $msg) {
+            if (strpos($htmlcontent, $msg) !== false) {
+
+                // Getting the error if possible.
+                switch ($type) {
+                    case 'php debug message':
+                        $error = error_get_last();
+                        $str = $error['message'] . ' in ' . $error['file'] . ' on line ' . $error['line'];
+                        break;
+                    case 'exception':
+                        $str = 'Exception';
+                        break;
+                    case 'debugging message':
+                        $str = 'Debugging message';
+                        break;
+                }
+                throw new Exception($type . ' found: ' . $str);
+            }
+        }
+    }
+
 }
