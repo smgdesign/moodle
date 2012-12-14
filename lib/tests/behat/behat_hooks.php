@@ -50,7 +50,7 @@ class behat_hooks extends behat_base {
     /**
      * Gives access to moodle codebase
      *
-     * Runs config.php to use moodle codebase, called once per suite
+     * Includes config.php to use moodle codebase, called once per suite
      *
      * @BeforeSuite
      */
@@ -63,13 +63,17 @@ class behat_hooks extends behat_base {
 
         require_once(__DIR__ . '/../../../config.php');
 
-        // Avoids bin/behat to be executed directly without test environment enabled
-        // to prevent undesired db & dataroot modifications, this is also checked in
-        // the BeforeScenario hook
+        // Avoids vendor/bin/behat to be executed directly without test environment enabled
+        // to prevent undesired db & dataroot modifications, this is also checked
+        // before each scenario (accidental user deletes) in the BeforeScenario hook
         require_once(__DIR__ . '/../../../admin/tool/behat/locallib.php');
 
         if (!tool_behat::is_test_mode_enabled()) {
-            throw new Exception('Behat only can run is test mode is enabled');
+            throw new Exception('Behat only can run if test mode is enabled. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
+        }
+
+        if (!tool_behat::is_server_running()) {
+            throw new Exception($CFG->behat_wwwroot . ' is not available, ensure you started your PHP built-in server. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
         }
     }
 
