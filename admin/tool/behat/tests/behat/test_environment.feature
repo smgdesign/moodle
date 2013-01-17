@@ -6,4 +6,4 @@ Feature: Set up the testing environment
 
   Scenario: Accessing the site
     When I am on homepage
-    Then I should see "PHPUnit test site"
+    Then I should see "Acceptance test site"

@@ -24,7 +24,6 @@
  */
 
 require_once(__DIR__ . '/../../behat/behat_base.php');
-require_once(__DIR__ . '/../../phpunit/classes/util.php');
 
 use Behat\Behat\Context\Step\Given as Given;
 use Behat\Behat\Event\ScenarioEvent as ScenarioEvent;
@@ -57,22 +56,22 @@ class behat_hooks extends behat_base {
     public static function before_suite($event) {
         global $CFG;
 
-        // Used to work with phpunit_dataroot and phpunit_prefix instead of the regular environment.
+        // iTo work with behat_dataroot and behat_prefix instead of the regular environment.
         define('BEHAT_RUNNING', 1);
         define('CLI_SCRIPT', 1);
 
         require_once(__DIR__ . '/../../../config.php');
+        require_once(__DIR__ . '/../../behat/classes/util.php');
 
         // Avoids vendor/bin/behat to be executed directly without test environment enabled
         // to prevent undesired db & dataroot modifications, this is also checked
         // before each scenario (accidental user deletes) in the BeforeScenario hook
-        require_once(__DIR__ . '/../../../admin/tool/behat/locallib.php');
 
-        if (!tool_behat::is_test_mode_enabled()) {
+        if (!behat_util::is_test_mode_enabled()) {
             throw new Exception('Behat only can run if test mode is enabled. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
         }
 
-        if (!tool_behat::is_server_running()) {
+        if (!behat_util::is_server_running()) {
             throw new Exception($CFG->behat_wwwroot . ' is not available, ensure you started your PHP built-in server. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
         }
     }
@@ -85,33 +84,21 @@ class behat_hooks extends behat_base {
     public function before_scenario($event) {
         global $DB, $SESSION, $CFG;
 
-        // Needs $CFG->admin and $CFG is set in before_suite().
-        require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/behat/locallib.php');
-
         // As many checks as we can.
         if (!defined('BEHAT_RUNNING') ||
                php_sapi_name() != 'cli' ||
-               !tool_behat::is_test_mode_enabled() ||
+               !behat_util::is_test_mode_enabled() ||
+               !behat_util::is_test_site() ||
                !isset($CFG->originaldataroot))  {
            throw new Exception('Behat only can modify the test database and the test dataroot');
            exit(1);
         }
 
-        phpunit_util::reset_database();
-        phpunit_util::reset_dataroot();
+        behat_util::reset_database();
+        behat_util::reset_dataroot();
 
-        // Assing valid data to admin user.
+        // Assing valid data to admin user (some generator-related code needs a valid user).
         $user = $DB->get_record('user', array('username' => 'admin'));
-        $user->email = 'moodle@moodlemoodle.com';
-        $user->firstname = 'Admin';
-        $user->lastname = 'User';
-        $user->city = 'Perth';
-        $user->country = 'AU';
-        $DB->update_record('user', $user);
-
-        // Sets maximum debug level.
-        set_config('debug', DEBUG_DEVELOPER);
-
         session_set_user($user);
 
         // Avoid some notices / warnings.

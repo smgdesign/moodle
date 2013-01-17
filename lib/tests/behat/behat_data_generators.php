@@ -24,8 +24,7 @@
  */
 
 require_once(__DIR__ . '/../../behat/behat_base.php');
-require_once(__DIR__ . '/../../phpunit/classes/util.php');
-require_once(__DIR__ . '/../../phpunit/generatorlib.php');
+require_once(__DIR__ . '/../../testing/generator/lib.php');
 
 use Behat\Gherkin\Node\TableNode as TableNode;
 use Behat\Behat\Exception\PendingException as PendingException;
@@ -103,7 +102,7 @@ class behat_data_generators extends behat_base {
             throw new PendingException($elementname . ' data generator is not implemented');
         }
 
-        $datagenerator = phpunit_util::get_data_generator();
+        $datagenerator = testing_util::get_data_generator();
 
         $elementdatagenerator = self::$elements[$elementname]['datagenerator'];
         $requiredfields = self::$elements[$elementname]['required'];
