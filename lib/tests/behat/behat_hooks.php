@@ -24,6 +24,7 @@
  */
 
 require_once(__DIR__ . '/../../behat/behat_base.php');
+require_once(__DIR__ . '/../../testing/classes/test_lock.php');
 
 use Behat\Behat\Context\Step\Given as Given;
 use Behat\Behat\Event\ScenarioEvent as ScenarioEvent;
@@ -74,6 +75,9 @@ class behat_hooks extends behat_base {
         if (!behat_util::is_server_running()) {
             throw new Exception($CFG->behat_wwwroot . ' is not available, ensure you started your PHP built-in server. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
         }
+
+        // Avoid parallel tests execution, it continues when the previous lock is released.
+        test_lock::acquire('behat');
     }
 
     /**
