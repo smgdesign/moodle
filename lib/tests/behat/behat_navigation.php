@@ -16,9 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Navigation steps definitions
+ * Navigation steps definitions.
  *
- * @package    core_navigation
+ * @package    core
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +27,7 @@
 require_once(__DIR__ . '/../../behat/behat_base.php');
 
 /**
- * Steps definitions to navigate through the navigation tree nodes
+ * Steps definitions to navigate through the navigation tree nodes.
  *
  * @package    core_navigation
  * @copyright  2012 David Monllaó
@@ -35,7 +36,7 @@ require_once(__DIR__ . '/../../behat/behat_base.php');
 class behat_navigation extends behat_base {
 
     /**
-     * Expands the selected node of the navigation tree that matches the text
+     * Expands the selected node of the navigation tree that matches the text.
      *
      * @Given /^I expand "(?P<nodetext_string>(?:[^"]|\\")*)" node$/
      * @param string $nodetext

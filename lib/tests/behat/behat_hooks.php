@@ -16,64 +16,74 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Behat hooks steps definitions
+ * Behat hooks steps definitions.
  *
- * @package    core_navigation
+ * @package    core
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../behat/behat_base.php');
-require_once(__DIR__ . '/../../testing/classes/test_lock.php');
 
 use Behat\Behat\Context\Step\Given as Given;
 use Behat\Behat\Event\ScenarioEvent as ScenarioEvent;
 use Behat\Behat\Event\StepEvent as StepEvent;
 
 /**
- * Hooks to the behat process
+ * Hooks to the behat process.
  *
  * Behat accepts hooks after and before each
- * suite, feature, scenario and step
+ * suite, feature, scenario and step.
  *
  * They can not call other steps as part of their process
  * like regular steps definitions does.
  *
- * @package    core
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Throws generic Exception because Behat is who is supposed to
+ * deal with it.
+ *
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_hooks extends behat_base {
 
     private $timeout = 10;
 
     /**
-     * Gives access to moodle codebase
+     * Gives access to moodle codebase.
      *
-     * Includes config.php to use moodle codebase, called once per suite
+     * Includes config.php to use moodle codebase with $CFG->behat_*
+     * instead of $CFG->prefix and $CFG->dataroot, called once per suite.
      *
+     * @throws Exception
      * @BeforeSuite
      */
     public static function before_suite($event) {
         global $CFG;
 
-        // iTo work with behat_dataroot and behat_prefix instead of the regular environment.
+        // To work with behat_dataroot and behat_prefix instead of the regular environment.
         define('BEHAT_RUNNING', 1);
         define('CLI_SCRIPT', 1);
 
         require_once(__DIR__ . '/../../../config.php');
+
+        // Now that we are MOODLE_INTERNAL.
+        require_once(__DIR__ . '/../../behat/classes/behat_command.php');
         require_once(__DIR__ . '/../../behat/classes/util.php');
+        require_once(__DIR__ . '/../../testing/classes/test_lock.php');
 
         // Avoids vendor/bin/behat to be executed directly without test environment enabled
         // to prevent undesired db & dataroot modifications, this is also checked
-        // before each scenario (accidental user deletes) in the BeforeScenario hook
+        // before each scenario (accidental user deletes) in the BeforeScenario hook.
 
         if (!behat_util::is_test_mode_enabled()) {
-            throw new Exception('Behat only can run if test mode is enabled. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
+            throw new Exception('Behat only can run if test mode is enabled. More info in ' . behat_command::DOCS_URL . '#Running_tests');
         }
 
         if (!behat_util::is_server_running()) {
-            throw new Exception($CFG->behat_wwwroot . ' is not available, ensure you started your PHP built-in server. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests');
+            throw new Exception($CFG->behat_wwwroot . ' is not available, ensure you started your PHP built-in server. More info in ' . behat_command::DOCS_URL . '#Running_tests');
         }
 
         // Avoid parallel tests execution, it continues when the previous lock is released.
@@ -82,7 +92,7 @@ class behat_hooks extends behat_base {
 
     /**
      * Resets the test environment
-     *
+     * @throws coding_exception If here we are not using the test database is because of a coding error
      * @BeforeScenario
      */
     public function before_scenario($event) {
@@ -94,8 +104,7 @@ class behat_hooks extends behat_base {
                !behat_util::is_test_mode_enabled() ||
                !behat_util::is_test_site() ||
                !isset($CFG->originaldataroot))  {
-           throw new Exception('Behat only can modify the test database and the test dataroot');
-           exit(1);
+           throw new coding_exception('Behat only can modify the test database and the test dataroot!');
         }
 
         behat_util::reset_database();
@@ -110,11 +119,12 @@ class behat_hooks extends behat_base {
     }
 
     /**
-     * Ensures selenium is running
+     * Ensures selenium is running.
      *
-     * Is only executed in scenarios which requires selenium to run,
-     * it returns a direct error message about what's going on
+     * Is only executed in scenarios which requires Javascript to run,
+     * it returns a direct error message about what's going on.
      *
+     * @throws Exception
      * @BeforeScenario @javascript
      */
     public function before_scenario_javascript($event) {
@@ -123,16 +133,16 @@ class behat_hooks extends behat_base {
         try {
             $this->getSession()->executeScript('// empty comment');
         } catch (Exception $e) {
-            $msg = 'Selenium server is not running, you need to start it to run tests that involves Javascript. More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests';
+            $moreinfo = 'More info in ' . behat_command::DOCS_URL . '#Running_tests';
+            $msg = 'Selenium server is not running, you need to start it to run tests that involves Javascript. ' . $moreinfo;
             throw new Exception($msg);
-            exit(1);
         }
     }
 
     /**
-     * Checks that all DOM is ready
+     * Checks that all DOM is ready.
      *
-     * Executed only when running against a browser
+     * Executed only when running against a real browser.
      *
      * @AfterStep @javascript
      */
@@ -144,7 +154,7 @@ class behat_hooks extends behat_base {
         }
 
         // Hooks doesn't allows other steps calls.
-        // TODO Store and check a static getSession()->getCurrentUrl() to avoid executing it at every step
+        // TODO Store and check a static getSession()->getCurrentUrl() to avoid executing it at every step.
         $this->getSession()->wait($this->timeout, '(document.readyState === "complete")');
     }
 

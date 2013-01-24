@@ -16,11 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Data generators for acceptance testing
+ * Data generators for acceptance testing.
  *
- * @package    core
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../behat/behat_base.php');
@@ -30,22 +31,34 @@ use Behat\Gherkin\Node\TableNode as TableNode;
 use Behat\Behat\Exception\PendingException as PendingException;
 
 /**
- * Steps definitions only used to set up the test environment
+ * Class to set up quickly a Given environment.
  *
- * @package    core
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Acceptance tests are block-boxed, so this steps definitions should only
+ * be used to set up the test environment as we are not replicating user steps.
+ *
+ * All data generators should be in lib/testing/generator/* and shared between phpunit
+ * and behat and they should be called from here, if possible using the standard
+ * 'create_$elementname($options)' and if not possible (data generators arguments will not be
+ * always the same) create an adapter 'adapt_$elementname($options)' that uses the data generator.
+ *
+ * @todo      If the available elements list grows too much this class must be split into smaller pieces
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_data_generators extends behat_base {
 
+    protected $datagenerator;
+
     /**
      * Each element specifies:
-     * - The data generator sufix used
-     * - The required fields
+     * - The data generator sufix used.
+     * - The required fields.
      * - The mapping between other elements references and database field names
      * @var array
      */
-    private static $elements = array(
+    protected static $elements = array(
         'users' => array(
             'datagenerator' => 'user',
             'required' => array('username')
@@ -71,7 +84,7 @@ class behat_data_generators extends behat_base {
             'switchids' => array('course' => 'courseid')
         ),
         'course enrolments' => array(
-            'datagenerator' => 'enrolment',
+            'datagenerator' => 'enrol_user',
             'required' => array('user', 'course', 'role'),
             'switchids' => array('user' => 'userid', 'course' => 'courseid', 'role' => 'roleid')
 
@@ -102,7 +115,7 @@ class behat_data_generators extends behat_base {
             throw new PendingException($elementname . ' data generator is not implemented');
         }
 
-        $datagenerator = testing_util::get_data_generator();
+        $this->datagenerator = testing_util::get_data_generator();
 
         $elementdatagenerator = self::$elements[$elementname]['datagenerator'];
         $requiredfields = self::$elements[$elementname]['required'];
@@ -112,7 +125,7 @@ class behat_data_generators extends behat_base {
 
         foreach ($data->getHash() as $elementdata) {
 
-            // Check all the required fields.
+            // Check if all the required fields are there.
             foreach ($requiredfields as $requiredfield) {
                 if (!isset($elementdata[$requiredfield])) {
                     throw new Exception($elementname . ' requires the field ' . $requiredfield . ' to be specified');
@@ -141,8 +154,13 @@ class behat_data_generators extends behat_base {
 
             // Creates element.
             $methodname = 'create_' . $elementdatagenerator;
-            if (method_exists($datagenerator, $methodname)) {
-                $datagenerator->{$methodname}($elementdata);
+            if (method_exists($this->datagenerator, $methodname)) {
+                // Using data generators directly.
+                $this->datagenerator->{$methodname}($elementdata);
+
+            } else if (method_exists($this, 'adapt_' . $elementdatagenerator)) {
+                // Using an adaptor to use the data generator.
+                $this->{'adapt_' . $elementdatagenerator}($elementdata);
             } else {
                 throw new PendingException($elementname . ' data generator is not implemented');
             }
@@ -155,11 +173,38 @@ class behat_data_generators extends behat_base {
      * @param array $data
      * @return array
      */
-    private function preprocess_user($data) {
+    protected function preprocess_user($data) {
         if (!isset($data['password'])) {
             $data['password'] = $data['username'];
         }
         return $data;
+    }
+
+
+    /**
+     * Adapter to enrol_user() data generator.
+     * @throws coding_exception
+     * @param mixed $data
+     */
+    protected function adapt_enrol_user($data) {
+
+        if (empty($data['roleid'])) {
+            throw new coding_exception('role must be present in testing_util::enrol_user() $record');
+        }
+
+        if (!isset($data['userid'])) {
+            throw new coding_exception('user must be present in testing_util::enrol_user() $record');
+        }
+
+        if (!isset($data['courseid'])) {
+            throw new coding_exception('course must be present in testing_util::enrol_user() $record');
+        }
+
+        if (!isset($data['enrol'])) {
+            $data['enrol'] = 'manual';
+        }
+
+        $this->datagenerator->enrol_user($data['userid'], $data['courseid'], $data['roleid'], $data['enrol']);
     }
 
     /**
@@ -168,7 +213,7 @@ class behat_data_generators extends behat_base {
      * @throws Exception
      * @return int
      */
-    private function get_user_id($username) {
+    protected function get_user_id($username) {
         global $DB;
 
         if (!$id = $DB->get_field('user', 'id', array('username' => $username))) {
@@ -183,7 +228,7 @@ class behat_data_generators extends behat_base {
      * @throws Exception
      * @return int
      */
-    private function get_role_id($roleshortname) {
+    protected function get_role_id($roleshortname) {
         global $DB;
 
         if (!$id = $DB->get_field('role', 'id', array('shortname' => $roleshortname))) {
@@ -199,7 +244,7 @@ class behat_data_generators extends behat_base {
      * @throws Exception
      * @return int
      */
-    private function get_category_id($idnumber) {
+    protected function get_category_id($idnumber) {
         global $DB;
 
         // If no category was specified use the data generator one.
@@ -220,7 +265,7 @@ class behat_data_generators extends behat_base {
      * @throws Exception
      * @return int
      */
-    private function get_course_id($shortname) {
+    protected function get_course_id($shortname) {
         global $DB;
 
         if (!$id = $DB->get_field('course', 'id', array('shortname' => $shortname))) {
@@ -235,7 +280,7 @@ class behat_data_generators extends behat_base {
      * @throws Exception
      * @return int
      */
-    private function get_group_id($idnumber) {
+    protected function get_group_id($idnumber) {
         global $DB;
 
         if (!$id = $DB->get_field('groups', 'id', array('idnumber' => $idnumber))) {
@@ -250,7 +295,7 @@ class behat_data_generators extends behat_base {
      * @throws Exception
      * @return int
      */
-    private function get_grouping_id($idnumber) {
+    protected function get_grouping_id($idnumber) {
         global $DB;
 
         if (!$id = $DB->get_field('groupings', 'id', array('idnumber' => $idnumber))) {

@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Steps definitions related with blocks
+ * Steps definitions related with blocks.
  *
- * @package    core_course
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../../lib/behat/behat_base.php');
@@ -27,16 +28,17 @@ require_once(__DIR__ . '/../../../lib/behat/behat_base.php');
 use Behat\Behat\Context\Step\Given as Given;
 
 /**
- * Blocks management steps definitions
+ * Blocks management steps definitions.
  *
- * @package    core_behat
+ * @package    core
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_blocks extends behat_base {
 
     /**
-     * Adds the selected block. Editing mode must be previously enabled
+     * Adds the selected block. Editing mode must be previously enabled.
      *
      * @Given /^I add the "(?P<block_name_string>(?:[^"]|\\")*)" block$/
      * @param string $blockname

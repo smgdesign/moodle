@@ -16,10 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Generic moodleforms field
+ * Generic moodleforms field.
  *
  * @package    core
- * @category   behat
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,12 +28,12 @@ use Behat\Mink\Session as Session,
     Behat\Mink\Element\NodeElement as NodeElement;
 
 /**
- * Representation of a moodle field
+ * Representation of a moodle field.
  *
- * Basically an interface with Mink session
+ * Basically an interface with Mink session.
  *
  * @package    core
- * @category   behat
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -43,7 +43,7 @@ class behat_form_field {
     protected $fieldnode;
 
     /**
-     * Reference to Mink session to traverse/modify the page DOM
+     * Reference to Mink session to traverse/modify the page DOM.
      *
      * @param Session $session
      * @param NodeElement $fieldnode The field DOM node
@@ -55,15 +55,16 @@ class behat_form_field {
     }
 
     /**
-     * Sets the value to a field
+     * Sets the value to a field.
      * @param string $value
+     * @return void
      */
     public function set_value($value) {
         $this->field->setValue($value);
     }
 
     /**
-     * Returns the current value of the select element
+     * Returns the current value of the select element.
      *
      * @return string
      */

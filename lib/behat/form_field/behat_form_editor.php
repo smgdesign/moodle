@@ -16,44 +16,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle editor field
+ * Moodle editor field.
  *
  * @package    core
- * @category   behat
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use Behat\Mink\Element\NodeElement as NodeElement;
 
-require_once($CFG->libdir . '/behat/form_field/behat_form_field.php');
+require_once(__DIR__ . '/behat_form_field.php');
 
 /**
- * Moodle editor field
+ * Moodle editor field.
  *
  * @todo Support for multiple editors
- * @package    core
- * @category   behat
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_form_editor extends behat_form_field {
 
-
     /**
-     * Sets the value to a field
+     * Sets the value to a field.
      * @param string $value
+     * @return void
      */
     public function set_value($value) {
 
-        // Set the value to the iframe and save it to the textarea
+        // Set the value to the iframe and save it to the textarea.
         $editorid = $this->field->getAttribute('id');
         $this->session->executeScript('tinyMCE.get("'.$editorid.'").setContent("' . $value . '");');
         $this->session->executeScript('tinyMCE.get("'.$editorid.'").save();');
     }
 
     /**
-     * Returns the editor value
+     * Returns the editor value.
      * @return string
      */
     public function get_value() {

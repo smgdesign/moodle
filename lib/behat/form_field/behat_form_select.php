@@ -15,44 +15,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Single select form field class
+ * Single select form field class.
  *
  * @package    core
- * @category   behat
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use Behat\Mink\Element\NodeElement as NodeElement;
 
-require_once($CFG->libdir . '/behat/form_field/behat_form_field.php');
+require_once(__DIR__  . '/behat_form_field.php');
 
 /**
- * Single select form field
+ * Single select form field.
  *
  * @package    core
- * @category   behat
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_form_select extends behat_form_field {
 
     /**
-     * Sets the value of a single select
+     * Sets the value of a single select.
      *
      * @param string $value
+     * @return void
      */
     public function set_value($value) {
         $this->field->selectOption($value);
     }
 
     /**
-     * Returns the text of the current value
+     * Returns the text of the current value.
      *
      * @return string
      */
     public function get_value() {
-
         $selectedoption = $this->field->find('xpath', '//option[@selected="selected"]');
         return $selectedoption->getText();
     }

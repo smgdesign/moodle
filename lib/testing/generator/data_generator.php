@@ -382,39 +382,6 @@ EOD;
     }
 
     /**
-     * Create a test manual enrolment
-     * @param array|stdClass $record
-     * @throws coding_exception
-     * @return void
-     */
-    public function create_enrolment($record) {
-        global $DB;
-
-        $record = (array)$record;
-
-        if (empty($record['roleid'])) {
-            throw new coding_exception('role must be present in phpunit_util::create_enrolment() $record');
-        }
-
-        if (!isset($record['userid'])) {
-            throw new coding_exception('user must be present in phpunit_util::create_enrolment() $record');
-        }
-
-        if (!isset($record['courseid'])) {
-            throw new coding_exception('course must be present in phpunit_util::create_enrolment() $record');
-        }
-
-        $plugin = enrol_get_plugin('manual');
-        $instance = $DB->get_record('enrol', array(
-            'courseid' => $record['courseid'],
-            'enrol' => 'manual',
-        ));
-
-        // Enrol the user in the course
-        $plugin->enrol_user($instance, $record['userid'], $record['roleid']);
-    }
-
-    /**
      * Create course section if does not exist yet
      * @param array|stdClass $record must contain 'course' and 'section' attributes
      * @param array|null $options

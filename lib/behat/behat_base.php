@@ -16,24 +16,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Base class of all steps definitions
+ * Base class of all steps definitions.
  *
- * @package    core
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Steps definitions base class
+ * Steps definitions base class.
  *
- * To extend by the steps definitions of the different Moodle components
+ * To extend by the steps definitions of the different Moodle components.
  *
  * It does not contain steps definitions, they will all be contained in
- * tests/behat folders depending on the target component to test
+ * tests/behat folders depending on the target component to test.
  *
- * @package    core
- * @copyright  2012 David Monllaó
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   core
+ * @category  test
+ * @copyright 2012 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
 
@@ -41,7 +43,8 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
      * Returns fixed step argument (with \\" replaced back to ").
      *
      * \\ is the chars combination to add when you
-     * want to escape the " character
+     * want to escape the " character that is used as var
+     * delimiter.
      *
      * @see Behat\MinkExtension\Context\MinkContext
      * @param string $argument
@@ -62,24 +65,6 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
     protected function locatePath($path) {
         $startUrl = rtrim($this->getMinkParameter('base_url'), '/') . '/';
         return 0 !== strpos($path, 'http') ? $startUrl . ltrim($path, '/') : $path;
-    }
-
-    /**
-     * Simple preg_match
-     *
-     * @param mixed $expected What to find
-     * @param mixed $in Where to find it
-     * @return boolean
-     */
-    protected function assertContains($expected, $in) {
-
-        $regex   = '/'.preg_quote($expected, '/').'/ui';
-
-        if (!preg_match($regex, $in)) {
-            return false;
-        }
-
-        return true;
     }
 
 }

@@ -18,6 +18,7 @@
  * Behat course-related steps definitions
  *
  * @package    core_course
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,6 +33,7 @@ use Behat\Behat\Context\Step\Given as Given,
  * Course-related steps definitions
  *
  * @package    core_course
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -42,7 +44,6 @@ class behat_course extends behat_base {
      * @Given /^I turn editing mode on$/
      */
     public function i_turn_editing_mode_on() {
-
         return new Given('I press "Turn editing on"');
     }
 
@@ -93,4 +94,3 @@ class behat_course extends behat_base {
     }
 
 }
-
