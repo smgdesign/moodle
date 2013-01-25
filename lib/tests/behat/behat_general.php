@@ -42,8 +42,6 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
  */
 class behat_general extends behat_base {
 
-    private $timeout = 10;
-
     /**
      * Opens Moodle homepage.
      *
@@ -81,7 +79,7 @@ class behat_general extends behat_base {
      * @Given /^I wait until the page is ready$/
      */
     public function wait_until_the_page_is_ready() {
-        $this->getSession()->wait($this->timeout, '(document.readyState === "complete")');
+        $this->getSession()->wait(self::TIMEOUT, '(document.readyState === "complete")');
     }
 
     /**

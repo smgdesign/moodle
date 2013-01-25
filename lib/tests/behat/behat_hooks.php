@@ -18,6 +18,8 @@
 /**
  * Behat hooks steps definitions.
  *
+ * This methods are used by Behat CLI command.
+ *
  * @package    core
  * @category   test
  * @copyright  2012 David Monllaó
@@ -39,8 +41,7 @@ use Behat\Behat\Event\StepEvent as StepEvent;
  * They can not call other steps as part of their process
  * like regular steps definitions does.
  *
- * Throws generic Exception because Behat is who is supposed to
- * deal with it.
+ * Throws generic Exception because they are captured by Behat.
  *
  * @package   core
  * @category  test
@@ -49,7 +50,10 @@ use Behat\Behat\Event\StepEvent as StepEvent;
  */
 class behat_hooks extends behat_base {
 
-    private $timeout = 10;
+    /**
+     * @var string The last visited URL.
+     */
+    private $lasturl = null;
 
     /**
      * Gives access to moodle codebase.
@@ -57,6 +61,7 @@ class behat_hooks extends behat_base {
      * Includes config.php to use moodle codebase with $CFG->behat_*
      * instead of $CFG->prefix and $CFG->dataroot, called once per suite.
      *
+     * @static
      * @throws Exception
      * @BeforeSuite
      */
@@ -148,14 +153,18 @@ class behat_hooks extends behat_base {
      */
     public function after_step_javascript($event) {
 
+        // If it doesn't have definition or it fails is not necessary.
         if ($event->getResult() != StepEvent::PASSED ||
             !$event->hasDefinition()) {
             return;
         }
 
-        // Hooks doesn't allows other steps calls.
-        // TODO Store and check a static getSession()->getCurrentUrl() to avoid executing it at every step.
-        $this->getSession()->wait($this->timeout, '(document.readyState === "complete")');
+        // Wait until the page is ready if we are in a new URL.
+        $currenturl = $this->getSession()->getCurrentUrl();
+        if (is_null($this->lasturl) || $currenturl !== $this->lasturl) {
+            $this->lasturl = $currenturl;
+            $this->getSession()->wait(self::TIMEOUT, '(document.readyState === "complete")');
+        }
     }
 
 }

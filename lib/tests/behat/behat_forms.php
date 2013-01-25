@@ -67,15 +67,26 @@ class behat_forms extends behat_base {
         // The action depends on the field type.
         foreach ($datahash as $locator => $value) {
 
-            // Finds the element in the page.
             unset($fieldnode);
+
+            // Removing \\ that escapes " of the steps arguments.
             $locator = $this->fixStepArgument($locator);
-            $fieldnode = $this->getSession()->getPage()->findField($locator);
-            if (null === $fieldnode) {
-                throw new ElementNotFoundException(
-                    $this->getSession(), 'form field', 'id|name|label|value', $locator
-                );
-            }
+
+            // Finds the element in the page waiting until it appears (or timeouts)
+            // otherwise spin() throws exception.
+            $exception = new ElementNotFoundException(
+                $this->getSession(), 'form field', 'id|name|label|value', $locator
+            );
+
+            // $context is $this and will be passed to the function by spin().
+            $args['locator'] = $locator;
+
+            // Closure to ensure field($locator) exists.
+            $fieldnode = $this->spin(
+                function($context, $args) {
+                    return $context->getSession()->getPage()->findField($args['locator']);
+                }, $exception, $args
+            );
 
             // Gets the field type from a parent node.
             $field = $this->get_field($fieldnode, $locator);
