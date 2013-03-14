@@ -211,7 +211,17 @@ class behat_data_generators extends behat_base {
             $data['enrol'] = 'manual';
         }
 
-        $this->datagenerator->enrol_user($data['userid'], $data['courseid'], $data['roleid'], $data['enrol']);
+        // We consider the course 1 as a system assign.
+        if ($data['courseid'] == 1) {
+            // Site assign.
+            $context = context_system::instance();
+            role_assign($data['roleid'], $data['userid'], $context->id);
+
+        } else {
+            // Course assign.
+            $this->datagenerator->enrol_user($data['userid'], $data['courseid'], $data['roleid'], $data['enrol']);
+        }
+
     }
 
     /**
