@@ -53,6 +53,15 @@ use Behat\Behat\Event\SuiteEvent as SuiteEvent,
 class behat_hooks extends behat_base {
 
     /**
+     * Job id
+     *
+     * Used to gather together all the job's screenshots.
+     *
+     * @var string
+     */
+    private static $jobid;
+
+    /**
      * Gives access to moodle codebase, ensures all is ready and sets up the test lock.
      *
      * Includes config.php to use moodle codebase with $CFG->behat_*
@@ -97,6 +106,9 @@ class behat_hooks extends behat_base {
         }
         // Avoid parallel tests execution, it continues when the previous lock is released.
         test_lock::acquire('behat');
+
+        // Unique and and easy to order by date.
+        self::$jobid = date('Y-m-d_H:i') . '_' . rand(1000, 9999);
     }
 
     /**
@@ -171,6 +183,26 @@ class behat_hooks extends behat_base {
      * @AfterStep @javascript
      */
     public function after_step_javascript($event) {
+        global $CFG;
+
+        // Save screenshot if specified.
+        if (!empty($CFG->behat_screenshots_dir)) {
+
+            // Job dir.
+            $filepath = $CFG->behat_screenshots_dir . DIRECTORY_SEPARATOR . self::$jobid;
+            if (!file_exists($filepath)) {
+                if (!mkdir($filepath, $CFG->directorypermissions, true)) {
+                    throw new coding_exception('$CFG->behat_screenshots_dir can not be created or is not writtable');
+                }
+            }
+
+            if (!is_writable($filepath)) {
+                throw coding_exception('$CFG->behat_screenshots_dir is not writtable');
+            }
+
+            $filename = $event->getStep()->getText() . '_' . rand(1000, 9999);
+            $this->saveScreenshot($filename, $filepath);
+        }
 
         // If it doesn't have definition or it fails there is no need to check it.
         if ($event->getResult() != StepEvent::PASSED ||
@@ -184,6 +216,7 @@ class behat_hooks extends behat_base {
         } catch (NoSuchWindow $e) {
             // If we were interacting with a popup window it will not exists after closing it.
         }
+
     }
 
 }
