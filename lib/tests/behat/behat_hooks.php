@@ -123,6 +123,14 @@ class behat_hooks extends behat_base {
         behat_util::reset_database();
         behat_util::reset_dataroot();
 
+        // Use a specific theme is specified.
+        if (!empty($CFG->behat_theme)) {
+            $theme = theme_config::load($CFG->behat_theme);
+            // Only for the default device type.
+            $themename = get_device_cfg_var_name('default');
+            set_config($themename, $theme->name);
+        }
+
         purge_all_caches();
         accesslib_clear_all_caches(true);
 
