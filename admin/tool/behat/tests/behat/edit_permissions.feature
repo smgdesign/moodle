@@ -15,7 +15,7 @@ Feature: Edit capabilities
       | user | course | role |
       | teacher1 | C1 | editingteacher |
 
-  @javascript
+  @javascript @asdasd
   Scenario: Default system capabilities modification
     Given I log in as "admin"
     And I set the following system permissions of "Teacher" role:

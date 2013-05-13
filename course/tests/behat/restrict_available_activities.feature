@@ -1,4 +1,4 @@
-@core @core_course
+@core @core_course @asdasd
 Feature: Restrict activities availability
   In order to prevent the use of some activities
   As an admin

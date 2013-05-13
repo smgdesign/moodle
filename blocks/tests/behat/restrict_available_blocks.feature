@@ -1,4 +1,4 @@
-@core @core_block
+@core @core_block @asdasd
 Feature: Allowed blocks controls
   In order to prevent the use of some blocks
   As an admin

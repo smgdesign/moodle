@@ -1,4 +1,4 @@
-@core @core_cohort
+@core @core_cohort @asdasd
 Feature: Add cohorts of users
   In order to create site-wide groups
   As an admin

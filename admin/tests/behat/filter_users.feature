@@ -1,4 +1,4 @@
-@core @core_admin
+@core @core_admin @asdasd
 Feature: An administrator can filter user accounts by role, cohort and other profile fields
   In order to find the user accounts I am looking for
   As an admin
