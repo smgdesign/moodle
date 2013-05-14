@@ -28,7 +28,7 @@ Feature: Page contents assertions
     And the "#groupeditform #showcreateorphangroupform" "css_element" should be enabled
     And the "#groupeditform #showeditgroupsettingsform" "css_element" should be disabled
 
-  @javascript
+  @javascript @MDL-39528
   Scenario: Locators inside specific DOM nodes using CSS selectors
     Given the following "courses" exists:
       | fullname | shortname | category |

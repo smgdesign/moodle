@@ -19,7 +19,7 @@ Feature: Forms manipulation
     And the "Unmask" checkbox should not be checked
     And I press "Update profile"
 
-  @javascript
+  @javascript @MDL-39528
   Scenario: Expand all fieldsets and advanced elements
     Given the following "courses" exists:
       | fullname | shortname | category |
@@ -28,9 +28,7 @@ Feature: Forms manipulation
     And I follow "Course 1"
     And I turn editing mode on
     And I add a "Quiz" to section "1"
-    When I expand all fieldsets
-    Then I should see "Close the quiz"
-    And I should see "Group mode"
-    And I should see "Grouping"
-    And I should not see "Show more..."
-    And I should see "Show less..."
+    And I fill the moodle form with:
+      | Description | asdasd |
+    And I follow "Course 1"
+    And I follow "Course 1"
