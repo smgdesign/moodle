@@ -53,6 +53,11 @@ use Behat\Behat\Event\SuiteEvent as SuiteEvent,
 class behat_hooks extends behat_base {
 
     /**
+     * @var Last browser session start time.
+     */
+    protected static $lastbrowsersessionstart = 0;
+
+    /**
      * Gives access to moodle codebase, ensures all is ready and sets up the test lock.
      *
      * Includes config.php to use moodle codebase with $CFG->behat_*
@@ -100,6 +105,12 @@ class behat_hooks extends behat_base {
         }
         // Avoid parallel tests execution, it continues when the previous lock is released.
         test_lock::acquire('behat');
+
+        // Store the browser reset time if reset after N seconds is specified in config.php.
+        if (!empty($CFG->behat_restart_browser_after)) {
+            // Store the initial browser session opening.
+            self::$lastbrowsersessionstart = time();
+        }
     }
 
     /**
@@ -135,6 +146,15 @@ class behat_hooks extends behat_base {
         // Assing valid data to admin user (some generator-related code needs a valid user).
         $user = $DB->get_record('user', array('username' => 'admin'));
         session_set_user($user);
+
+        // Reset the browser if specified in config.php.
+        if (!empty($CFG->behat_restart_browser_after) && $this->running_javascript()) {
+            $now = time();
+            if (self::$lastbrowsersessionstart + $CFG->behat_restart_browser_after < $now) {
+                $this->getSession()->restart();
+                self::$lastbrowsersessionstart = $now;
+            }
+        }
 
         // Start always in the the homepage.
         $this->getSession()->visit($this->locate_path('/'));
