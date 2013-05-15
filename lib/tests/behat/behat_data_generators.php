@@ -52,6 +52,11 @@ use Behat\Behat\Exception\PendingException as PendingException;
 class behat_data_generators extends behat_base {
 
     /**
+     * @var The keyword to reference the system context.
+     */
+    const system_reference = 'System';
+
+    /**
      * @var testing_data_generator
      */
     protected $datagenerator;
@@ -98,6 +103,11 @@ class behat_data_generators extends behat_base {
             'datagenerator' => 'role_assign',
             'required' => array('user', 'role'),
             'switchids' => array('user' => 'userid', 'role' => 'roleid')
+        ),
+        'role assigns' => array(
+            'datagenerator' => 'role_assign',
+            'required' => array('user', 'role', 'where'),
+            'switchids' => array('user' => 'userid', 'role' => 'roleid', 'where' => 'contextid')
         ),
         'group members' => array(
             'datagenerator' => 'group_member',
@@ -236,7 +246,10 @@ class behat_data_generators extends behat_base {
     }
 
     /**
-     * Assigns a role to a user at system level.
+     * Assigns a role to a user at the specified context
+     *
+     * Used both by "system role assign" and "role assign"
+     *
      * @throws Exception
      * @param array $data
      * @return void
@@ -251,8 +264,13 @@ class behat_data_generators extends behat_base {
             throw new Exception('\'system role assigns\' requires the field \'user\' to be specified');
         }
 
-        $context = context_system::instance();
-        role_assign($data['roleid'], $data['userid'], $context->id);
+        // Defaults to system.
+        if (!isset($data['contextid'])) {
+            $context = context_system::instance();
+            $data['contextid'] = $context->id;
+        }
+
+        $this->datagenerator->role_assign($data['roleid'], $data['userid'], $data['contextid']);
     }
 
     /**
@@ -351,4 +369,59 @@ class behat_data_generators extends behat_base {
         }
         return $id;
     }
+
+    /**
+     * Gets the internal context id from the context reference.
+     *
+     * The context reference changes depending on the context
+     * level, it can be the system, a category, a course or an
+     * user.
+     *
+     * @throws Exception
+     * @param mixed $contextref
+     * @return int The context id
+     */
+    protected function get_where_id($contextref) {
+        global $DB;
+
+        // We check all the levels, we have to avoid test writers to use
+        // different entities with duplicate references.
+        $contextids = array();
+
+        // System.
+        if ($contextref == self::system_reference) {
+            $contextids['system'] = context_system::instance();
+        }
+
+        // Users.
+        $userid = $DB->get_field('user', 'id', array('username' => $contextref));
+        if ($userid) {
+            $contextids['user'] = context_user::instance($userid);
+        }
+
+        // Course categories.
+        $categoryid = $DB->get_field('course_categories', 'id', array('idnumber' => $contextref));
+        if ($categoryid) {
+            $contextids['category'] = context_coursecat::instance($categoryid);
+        }
+
+        // Courses.
+        $courseid = $DB->get_field('course', 'id', array('shortname' => $contextref));
+        if ($courseid) {
+            $contextids['course'] = context_course::instance($courseid);
+        }
+
+        // No valid context.
+        if (empty($contextids)) {
+            throw new Exception('The specified "' . $contextref . '" context reference does not exist');
+        }
+
+        // Too much valid contexts.
+        if (sizeof($contextids) > 1) {
+            throw new Exception('There is more than one entity that can be refered by "' . $contextref . '", use different references to solve this');
+        }
+
+        return reset($contextids)->id;
+    }
+
 }
