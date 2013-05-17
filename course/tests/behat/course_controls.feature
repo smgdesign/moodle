@@ -1,4 +1,4 @@
-@core @core_course
+@core @core_course @MDL-39717
 Feature: Course activity controls works as expected
   In order to manage my course's activities
   As a teacher

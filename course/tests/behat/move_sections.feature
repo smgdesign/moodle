@@ -1,4 +1,4 @@
-@core @core_course
+@core @core_course @MDL-39717
 Feature: Sections can be moved
   In order to rearrange my course contents
   As a teacher
