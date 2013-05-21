@@ -117,7 +117,7 @@ if (!defined('BEHAT_SITE_RUNNING') && !empty($CFG->behat_dataroot) &&
     $behatrunning = defined('BEHAT_TEST');
     $testenvironmentrequested = $switchcompletely || $builtinserver || $behatrunning;
 
-    // Only switch to test environment if it has been enabled.
+    // Only switch to test environment if all sites have been enabled.
     $testenvironmentenabled = file_exists($CFG->behat_dataroot . '/behat/test_environment_enabled.txt');
 
     if ($testenvironmentenabled && $testenvironmentrequested) {
@@ -130,6 +130,10 @@ if (!defined('BEHAT_SITE_RUNNING') && !empty($CFG->behat_dataroot) &&
         // Different from BEHAT_TEST as only this last one can perform CLI
         // actions like reset the site or use data generators.
         define('BEHAT_SITE_RUNNING', true);
+
+        // Force site 0, is just a POC.
+        $defaultsitedataroot = realpath(behat_get_site_dataroot());
+        $defaultsiteprefix = behat_get_site_prefix();
 
         $CFG->wwwroot = $CFG->behat_wwwroot;
         $CFG->passwordsaltmain = 'moodle';
