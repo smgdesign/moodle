@@ -42,7 +42,7 @@ if ($code == 0) {
 
 } else if ($code == BEHAT_EXITCODE_INSTALL) {
 
-    testing_update_composer_dependencies();
+    //testing_update_composer_dependencies();
 
     // Behat and dependencies are installed and we need to install the test site.
     chdir(__DIR__);
@@ -53,7 +53,7 @@ if ($code == 0) {
 
 } else if ($code == BEHAT_EXITCODE_REINSTALL) {
 
-    testing_update_composer_dependencies();
+    //testing_update_composer_dependencies();
 
     // Test site data is outdated.
     chdir(__DIR__);

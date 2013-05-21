@@ -15,13 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * CLI tool with utilities to manage Behat integration in Moodle
- *
- * All CLI utilities uses $CFG->behat_dataroot and $CFG->prefix_dataroot as
- * $CFG->dataroot and $CFG->prefix
+ * CLI tool to manage behat sites.
  *
  * @package    tool_behat
- * @copyright  2012 David Monllaó
+ * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +31,6 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 require_once(__DIR__ . '/../../../../lib/clilib.php');
 require_once(__DIR__ . '/../../../../lib/behat/lib.php');
 
-
 // CLI options.
 list($options, $unrecognized) = cli_get_params(
     array(
@@ -43,6 +39,7 @@ list($options, $unrecognized) = cli_get_params(
         'drop'    => false,
         'enable'  => false,
         'disable' => false,
+        'siteid'  => false,
         'diag'    => false
     ),
     array(
@@ -56,24 +53,28 @@ if ($options['install'] or $options['drop']) {
 
 // Checking util.php CLI script usage.
 $help = "
-Behat utilities to manage the test environment
+Internal script, use admin/tool/behat/util.php instead to keep test site sync.
 
 Options:
 --install  Installs the test environment for acceptance tests
 --drop     Drops the database tables and the dataroot contents
 --enable   Enables test environment and updates tests list
 --disable  Disables test environment
+--siteid   The test site id
 --diag     Get behat test environment status code
 
 -h, --help     Print out this help
 
 Example from Moodle root directory:
-\$ php admin/tool/behat/cli/util.php --enable
-
-More info in http://docs.moodle.org/dev/Acceptance_testing#Running_tests
+\$ php admin/tool/behat/cli/util_single_instance.php --install --site=1
 ";
 
 if (!empty($options['help'])) {
+    echo $help;
+    exit(0);
+}
+
+if (!isset($options['siteid']) || !is_numeric($options['siteid'])) {
     echo $help;
     exit(0);
 }
@@ -94,67 +95,67 @@ require_once(__DIR__ . '/../../../../config.php');
 // Ensure the main $CFG->behat_* data is ok.
 behat_check_cfg();
 
+// Override with site specifics from now.
+$CFG->behat_dataroot = behat_get_site_dataroot($options['siteid']);
+$CFG->behat_prefix = behat_get_site_prefix($options['siteid']);
+
+behat_create_dataroot();
+
+// Overrides vars with behat-test ones.
+$vars = array('wwwroot', 'prefix', 'dataroot');
+foreach ($vars as $var) {
+    $CFG->{$var} = $CFG->{'behat_' . $var};
+}
+
+$CFG->noemailever = true;
+$CFG->passwordsaltmain = 'moodle';
+
+$CFG->themerev = 1;
+$CFG->jsrev = 1;
+
+// Unset cache and temp directories to reset them again with the new $CFG->dataroot.
+unset($CFG->cachedir);
+unset($CFG->tempdir);
+
+// Continues setup.
+define('ABORT_AFTER_CONFIG_CANCEL', true);
+require("$CFG->dirroot/lib/setup.php");
+
+require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir.'/upgradelib.php');
+require_once($CFG->libdir.'/clilib.php');
+require_once($CFG->libdir.'/pluginlib.php');
+require_once($CFG->libdir.'/installlib.php');
+require_once($CFG->libdir.'/testing/classes/test_lock.php');
+
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
     cli_error(get_string('cliunknowoption', 'admin', $unrecognized));
 }
 
-// Defaults to 1 behat test site.
-if (empty($CFG->behat_number_sites) || !is_numeric($CFG->behat_number_sites)) {
-    $CFG->behat_number_sites = 1;
-}
-$sitescounterfile = $CFG->behat_dataroot . DIRECTORY_SEPARATOR . 'behat' . DIRECTORY_SEPARATOR . 'number_sites.txt';
+// Behat utilities.
+require_once($CFG->libdir . '/behat/classes/util.php');
+require_once($CFG->libdir . '/behat/classes/behat_command.php');
 
-if (!$sitesnumber = file_get_contents($sitescounterfile)) {
-    file_put_contents($sitescounterfile, $CFG->behat_number_sites);
-    testting_fix_file_permissions($sitescounterfile);
-}
-
-// The number of sites should be the same, otherwise --drop & --install.
-// util.php --diag (init.php by extension) will pass through here also returning REINSTALL.
-if ($sitesnumber != $CFG->behat_number_sites) {
-    behat_error(BEHAT_EXITCODE_REINSTALL, '$CFG->behat_number_sites has changed');
-}
-
-// Pass execution to a single site process.
-chdir(__DIR__);
+// Run command (only one per time).
 if ($options['install']) {
-    for ($i = 0; $i < $sitesnumber; $i++) {
-        passthru("php util_single_site.php --install --siteid=$i", $code);
-        if ($code != 0) {
-            behat_error(1, "Error installing $i test site");
-            exit($code);
-        }
-    }
+    behat_util::install_site();
+    mtrace("Acceptance test site {$options['siteid']} installed");
 } else if ($options['drop']) {
-    for ($i = 0; $i < $sitesnumber; $i++) {
-        passthru("php util_single_site.php --drop --siteid=$i", $code);
-        if ($code != 0) {
-            behat_error(1, "Error dropping $i test site");
-            exit($code);
-        }
-    }
-    unlink($sitescounterfile);
+    // Ensure no tests are running.
+    test_lock::acquire('behat');
+    behat_util::drop_site();
+    mtrace("Acceptance tests site {$options['siteid']} dropped");
 } else if ($options['enable']) {
-    for ($i = 0; $i < $sitesnumber; $i++) {
-        passthru("php util_single_site.php --enable --siteid=$i", $code);
-        if ($code != 0) {
-            behat_error(1, "Error enabling $i test site");
-            exit($code);
-        }
-    }
+    behat_util::start_test_mode();
+    $runtestscommand = behat_command::get_behat_command() . ' --config '
+        . $CFG->behat_dataroot . DIRECTORY_SEPARATOR . 'behat' . DIRECTORY_SEPARATOR . 'behat.yml';
+    mtrace("Acceptance tests environment for {$options['siteid']} site enabled");
 } else if ($options['disable']) {
-    for ($i = 0; $i < $sitesnumber; $i++) {
-        passthru("php util_single_site.php --disable --siteid=$i", $code);
-        if ($code != 0) {
-            behat_error(1, "Error disabling $i test site");
-            exit($code);
-        }
-    }
+    behat_util::stop_test_mode();
+    mtrace("Acceptance tests environment for {$options['siteid']} disabled");
 } else if ($options['diag']) {
-    // We only check the status of the first site, we will consider that all
-    // of them have the same status.
-    passthru("php util_single_site.php --diag --siteid=0", $code);
+    $code = behat_util::get_behat_status();
     exit($code);
 } else {
     echo $help;

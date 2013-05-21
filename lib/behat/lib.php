@@ -35,6 +35,97 @@ define('BEHAT_EXITCODE_INSTALL', 254);
 define('BEHAT_EXITCODE_COMPOSER', 255);
 
 /**
+ * Checks that $CFG->behat_prefix and $CFG->behat_dataroot are properly set
+ *
+ * @return void
+ */
+function behat_check_cfg() {
+    global $CFG;
+
+    // CFG->behat_prefix must be set and with value different than CFG->prefix and phpunit_prefix.
+    if (empty($CFG->behat_prefix) ||
+           ($CFG->behat_prefix == $CFG->prefix) ||
+           (!empty($CFG->phpunit_prefix) && $CFG->behat_prefix == $CFG->phpunit_prefix)) {
+        behat_error(BEHAT_EXITCODE_CONFIG,
+            'Define $CFG->behat_prefix in config.php with a value different than $CFG->prefix and $CFG->phpunit_prefix');
+    }
+
+    // CFG->behat_dataroot must be set and with value different than CFG->dataroot and phpunit_dataroot.
+    if (empty($CFG->behat_dataroot) ||
+           ($CFG->behat_dataroot == $CFG->dataroot) ||
+           (!empty($CFG->phpunit_dataroot) && $CFG->behat_dataroot == $CFG->phpunit_dataroot)) {
+        behat_error(BEHAT_EXITCODE_CONFIG,
+            'Define $CFG->behat_dataroot in config.php with a value different than $CFG->dataroot and $CFG->phpunit_dataroot');
+    }
+
+    behat_create_dataroot();
+}
+
+/**
+ * Creates and inits a behat dataroot
+ *
+ * exit() if it finds major problems
+ *
+ * @return void
+ */
+function behat_create_dataroot() {
+    global $CFG;
+
+    // Create behat_dataroot if it doesn't exists.
+    if (!file_exists($CFG->behat_dataroot)) {
+        if (!mkdir($CFG->behat_dataroot, $CFG->directorypermissions)) {
+            behat_error(BEHAT_EXITCODE_PERMISSIONS, '$CFG->behat_dataroot directory can not be created');
+        }
+    }
+    if (!is_dir($CFG->behat_dataroot) || !is_writable($CFG->behat_dataroot)) {
+        behat_error(BEHAT_EXITCODE_PERMISSIONS, '$CFG->behat_dataroot directory has no permissions or is not a directory');
+    }
+
+    // Check that the main directory does not contains other things and have the basic contents.
+    if (!file_exists("$CFG->behat_dataroot/behattestdir.txt")) {
+        if ($dh = opendir($CFG->behat_dataroot)) {
+            while (($file = readdir($dh)) !== false) {
+                if ($file === 'behat' or $file === '.' or $file === '..' or $file === '.DS_Store'
+                        or substr($file, 0, 5) === 'site_') {
+                    continue;
+                }
+                behat_error(BEHAT_EXITCODE_CONFIG, '$CFG->behat_dataroot directory is not empty, ensure this is the directory where you want to install behat test dataroot');
+            }
+            closedir($dh);
+            unset($dh);
+            unset($file);
+        }
+
+        // Now we create dataroot directory structure for behat tests.
+        testing_initdataroot($CFG->behat_dataroot, 'behat');
+    }
+}
+
+/**
+ * Returns the test site dataroot path based in the current value of $CFG->behat_dataroot.
+ *
+ * @param int $siteid
+ * @return string
+ */
+function behat_get_site_dataroot($siteid = 0) {
+    global $CFG;
+
+    return $CFG->behat_dataroot . DIRECTORY_SEPARATOR . 'site_' . strval($siteid);
+}
+
+/**
+ * Returns the test site prefix based in the current value of $CFG->behat_prefix.
+ *
+ * @param int $siteid
+ * @return string
+ */
+function behat_get_site_prefix($siteid = 0) {
+    global $CFG;
+
+    return $CFG->behat_prefix . strval($siteid) . '_';
+}
+
+/**
  * Exits with an error code
  *
  * @param  mixed $errorcode
