@@ -482,6 +482,7 @@ class behat_course extends behat_base {
 
         // Adding chr(10) to save changes.
         return array(
+            new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I click on "' . get_string('edittitle') . '" "link" in the "' . $activityname .'" activity'),
             new Given('I fill in "title" with "' . $newactivityname . chr(10) . '"'),
             new Given('I wait "2" seconds')
@@ -497,6 +498,7 @@ class behat_course extends behat_base {
     public function i_indent_right_activity($activityname) {
 
         $steps = array(
+            new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I click on "' . get_string('moveright') . '" "link" in the "' . $activityname . '" activity')
         );
 
@@ -516,6 +518,7 @@ class behat_course extends behat_base {
     public function i_indent_left_activity($activityname) {
 
         $steps = array(
+            new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I click on "' . get_string('moveleft') . '" "link" in the "' . $activityname . '" activity')
         );
 
@@ -553,6 +556,7 @@ class behat_course extends behat_base {
 
             // With JS disabled.
             $steps = array(
+                new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $activityname . '" activity'),
                 new Given('I click on "' . $deletestring . '" "link" in the "' . $activityname . '" activity'),
                 new Given('I press "' . get_string('yes') . '"')
             );
@@ -569,6 +573,7 @@ class behat_course extends behat_base {
      */
     public function i_duplicate_activity($activityname) {
         return array(
+            new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I click on "' . get_string('duplicate') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I press "' . get_string('continue') .'"'),
             new Given('I press "' . get_string('duplicatecontcourse') .'"')
@@ -584,6 +589,7 @@ class behat_course extends behat_base {
      */
     public function i_duplicate_activity_editing_the_new_copy_with($activityname, TableNode $data) {
         return array(
+            new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I click on "' . get_string('duplicate') . '" "link" in the "' . $activityname . '" activity'),
             new Given('I press "' . get_string('continue') .'"'),
             new Given('I press "' . get_string('duplicatecontedit') . '"'),
