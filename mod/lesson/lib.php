@@ -745,8 +745,6 @@ function lesson_supports($feature) {
             return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
-        case FEATURE_GLOBAL_SEARCH:
-            return true;
         default:
             return null;
     }
@@ -1118,9 +1116,9 @@ function lesson_search_access($id) {
     }
     
     // give access to search results to teacher or editing-teacher or manager
-    $viewableuser = has_capability('mod/lesson:manage', $context);
+    $issuperuser = has_capability('mod/lesson:manage', $context);
     
-    if (!$viewableuser){
+    if (!$issuperuser){
         // checks for time boundation
         if (!empty($lesson->available) or !empty($lesson->deadline)) {
             if (empty($lesson->available) and time() > $lesson->deadline) {
