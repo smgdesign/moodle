@@ -4,7 +4,7 @@ Feature: Automatic creation of groups
   As a teacher
   I need to create groups automatically and allocate them in groupings if necessary
 
-  @javascript
+  @javascript @MDL-40322
   Scenario: Split automatically the course users in groups and add the groups to a new grouping
     Given the following "courses" exists:
       | fullname | shortname | category |

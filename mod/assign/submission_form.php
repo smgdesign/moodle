@@ -44,7 +44,7 @@ class mod_assign_submission_form extends moodleform {
         $mform = $this->_form;
 
         list($assign, $data) = $this->_customdata;
-
+debugging('I am the assignment submission debugging() message');
         $assign->add_submission_form_elements($mform, $data);
 
         $this->add_action_buttons(true, get_string('savechanges', 'assign'));

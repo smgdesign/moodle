@@ -75,6 +75,7 @@ $completion->set_module_viewed($cm);
     }
     $groupingid = $cm->groupingid;
 
+    echo $idontexist;
     if (has_capability('mod/survey:readresponses', $context) or ($groupmode == VISIBLEGROUPS)) {
         $currentgroup = 0;
     }

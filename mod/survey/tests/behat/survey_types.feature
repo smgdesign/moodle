@@ -4,6 +4,7 @@ Feature: A teacher can set three types of survey activity
   As a teacher
   I need to set survey activities and select which survey type suits my needs
 
+  @MDL-40322
   Scenario: Switching between the three survey types
     Given the following "users" exists:
       | username | firstname | lastname | email |

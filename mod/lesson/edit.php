@@ -70,4 +70,5 @@ if (!$lesson->has_pages()) {
     }
 }
 
+echo 'line 47 of /mod/assign/submission_form.php: call to debugging()';
 echo $lessonoutput->footer();

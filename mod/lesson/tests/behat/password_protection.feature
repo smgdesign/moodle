@@ -4,7 +4,7 @@ Feature: A teacher can password protect a lesson
   As a teacher
   I need to set a password to access the lesson
 
-  @javascript
+  @javascript @MDL-40322
   Scenario: Accessing as student to a protected lesson
     Given the following "users" exists:
       | username | firstname | lastname | email |
