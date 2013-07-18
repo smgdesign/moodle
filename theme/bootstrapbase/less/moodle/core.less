@@ -1930,7 +1930,7 @@ div.badge .expireimage {
     .block .editing_move {
         display:none;
     }
-    .moodle-actionmenu {
+    .moodle-actionmenu[data-enhance] {
         display: block;
         .menu {
             display:none;
@@ -1939,13 +1939,13 @@ div.badge .expireimage {
             display: inline; /** JS is enabled, we'll be using it so return display to normal **/
             .opacity(50);
         }
-        &[data-enhanced] {
-            .toggle-display {
-                .opacity(100);
-            }
-            .menu-action-text  {
-                display:inline;
-            }
+    }
+    .moodle-actionmenu[data-enhanced] {
+        .toggle-display {
+            .opacity(100);
+        }
+        .menu-action-text  {
+            display:inline;
         }
     }
 }
@@ -1958,6 +1958,7 @@ div.badge .expireimage {
 
         display:block;
         position: absolute;
+        text-align: left;
         background-color: #fff;
         border: 1px solid #ccc;
         z-index:1000;
@@ -1981,7 +1982,7 @@ div.badge .expireimage {
             }
         }
         a.hidden {
-            display: none;
+            display:none;
         }
         img {
             vertical-align: middle;
@@ -2027,6 +2028,7 @@ div.badge .expireimage {
 .dir-rtl {
     .moodle-actionmenu[data-enhanced].show  {
         .menu {
+            text-align: right;
             left: 0;
             right: auto;
             .iconsmall {
