@@ -1160,9 +1160,15 @@ $string['cachesession'] = 'Session cache';
 $string['cachesessionhelp'] = 'User specific cache that expires when the user\'s session ends. Designed to alleviate session bloat/strain.';
 $string['cacheapplication'] = 'Application cache';
 $string['cacheapplicationhelp'] = 'Cached items are shared among all users and expire by a determined time to live (ttl).';
+
+
+/* Global Search admin settings page string values */
+$string['choosesearchengine'] = 'Choose Search Engine';
+$string['choosesearchengine_desc'] = 'Choose your preferred Search Engine';
 $string['globalsearch'] = 'Global Search';
 $string['gs_support_mod'] = '{$a}';
 $string['gs_support_mod_desc'] = 'Allow indexing and searches of the {$a}';
+$string['searchengine'] = 'Search Engine';
 $string['solrauthpassword'] = 'Password';
 $string['solrauthpassword_desc'] = 'HTTP Basic Authentication Password';
 $string['solrauthuser'] = 'Username';
