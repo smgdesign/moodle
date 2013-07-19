@@ -53,6 +53,16 @@ class behat_util extends testing_util {
     protected static $datarootskipondrop = array('.', '..', 'lock');
 
     /**
+     * @var array Site settings used by the test site
+     */
+    protected static $enabledsitesettings = array(
+        'debugdisplay', 'enablenotes', 'enableblogs', 'enablebadges', 'enableoutcomes',
+        'enableportfolios', 'enablerssfeeds', 'enablecompletion', 'enablecourserequests',
+        'enableavailability', 'enableplagiarism', 'enablegroupmembersonly', 'enablegravatar',
+        'enablesafebrowserintegration', 'usecomments', 'dndallowtextandlinks', 'gradepublishing'
+    );
+
+    /**
      * Installs a site using $CFG->dataroot and $CFG->prefix
      * @throws coding_exception
      * @return void
@@ -84,12 +94,27 @@ class behat_util extends testing_util {
         $user->country = 'AU';
         $DB->update_record('user', $user);
 
+        // Enable all of Moodle's features that adds functionality to the default settings.
+        foreach (self::$enabledsitesettings as $setting) {
+            set_config($setting, 1);
+        }
+
         // Disable email message processor.
         $DB->set_field('message_processors', 'enabled', '0', array('name' => 'email'));
 
         // Sets maximum debug level.
         set_config('debug', DEBUG_DEVELOPER);
-        set_config('debugdisplay', true);
+
+        // Show all the different display modes in the front page
+        $frontpage = new admin_setting_courselist_frontpage(false);
+        $frontpage->write_setting(array(
+            FRONTPAGEALLCOURSELIST, FRONTPAGENEWS, FRONTPAGECATEGORYNAMES, FRONTPAGECOURSESEARCH, FRONTPAGECATEGORYCOMBO
+        ));
+        $frontpagelogged = new admin_setting_courselist_frontpage(true);
+        $frontpagelogged->write_setting(array(
+            FRONTPAGEALLCOURSELIST, FRONTPAGENEWS, FRONTPAGECATEGORYNAMES, FRONTPAGECOURSESEARCH,
+            FRONTPAGECATEGORYCOMBO, FRONTPAGEENROLLEDCOURSELIST
+        ));
 
         // Keeps the current version of database and dataroot.
         self::store_versions_hash();
