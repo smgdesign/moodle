@@ -1094,7 +1094,7 @@ function lesson_search_files($from = 0) {
     $fs = get_file_storage();
 
     foreach ($lessonrecords as $lessonrecord) {
-        try{
+        try {
             $lesson = $DB->get_record('lesson', array('id' => $lessonrecord->id), '*', MUST_EXIST);
             $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
             $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
@@ -1123,7 +1123,6 @@ function lesson_search_files($from = 0) {
     }
 }
 
-// @TODO-done.
 function lesson_search_access($id) {
     global $DB, $USER;
     try {

@@ -371,7 +371,6 @@ function label_search_get_documents($id) {
     return $docs;
 }
 
-// @TODO-done.
 function label_search_access($id) {
     global $DB;
     try {
