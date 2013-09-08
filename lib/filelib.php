@@ -2134,7 +2134,7 @@ function send_temp_file($path, $filename, $pathisstring=false) {
     }
 
     // close session - not needed anymore
-    session_get_instance()->write_close();
+    \core\session\manager::write_close();
 
     if (!$pathisstring) {
         if (!file_exists($path)) {
@@ -2217,7 +2217,7 @@ function send_file($path, $filename, $lifetime = 'default' , $filter=0, $pathiss
         }
     }
 
-    session_get_instance()->write_close(); // unlock session during fileserving
+    \core\session\manager::write_close(); // Unlock session during file serving.
 
     // Use given MIME type if specified, otherwise guess it using mimeinfo.
     // IE, Konqueror and Opera open html file directly in browser from web even when directed to save it to disk :-O
@@ -2380,7 +2380,7 @@ function send_stored_file($stored_file, $lifetime=86400 , $filter=0, $forcedownl
         ignore_user_abort(true);
     }
 
-    session_get_instance()->write_close(); // unlock session during fileserving
+    \core\session\manager::write_close(); // Unlock session during file serving.
 
     // Use given MIME type if specified, otherwise guess it using mimeinfo.
     // IE, Konqueror and Opera open html file directly in browser from web even when directed to save it to disk :-O
@@ -3881,7 +3881,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'feedback' and $context->contextlevel == CONTEXT_COURSE) {
@@ -3898,7 +3898,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
         } else {
             send_file_not_found();
@@ -3919,7 +3919,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, true, array('preview' => $preview));
 
         } else {
@@ -3941,14 +3941,14 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close();
+            \core\session\manager::write_close();
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
         } else if ($filearea === 'userbadge'  and $context->contextlevel == CONTEXT_USER) {
             if (!$file = $fs->get_file($context->id, 'badges', 'userbadge', $badge->id, '/', $filename.'.png')) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close();
+            \core\session\manager::write_close();
             send_stored_file($file, 60*60, 0, true, array('preview' => $preview));
         }
     // ========================================================================================================================
@@ -3975,7 +3975,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'event_description' and $context->contextlevel == CONTEXT_USER) {
@@ -4003,7 +4003,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'event_description' and $context->contextlevel == CONTEXT_COURSE) {
@@ -4050,7 +4050,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else {
@@ -4124,7 +4124,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 0, 0, true, array('preview' => $preview)); // must force download - security!
 
         } else if ($filearea === 'profile' and $context->contextlevel == CONTEXT_USER) {
@@ -4171,7 +4171,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 0, 0, true, array('preview' => $preview)); // must force download - security!
 
         } else if ($filearea === 'profile' and $context->contextlevel == CONTEXT_COURSE) {
@@ -4209,7 +4209,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 0, 0, true, array('preview' => $preview)); // must force download - security!
 
         } else if ($filearea === 'backup' and $context->contextlevel == CONTEXT_USER) {
@@ -4230,7 +4230,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 0, 0, true, array('preview' => $preview)); // must force download - security!
 
         } else {
@@ -4255,7 +4255,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
         } else {
             send_file_not_found();
@@ -4278,7 +4278,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'section') {
@@ -4300,7 +4300,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else {
@@ -4332,7 +4332,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'icon') {
@@ -4347,7 +4347,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 }
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, false, array('preview' => $preview));
 
         } else {
@@ -4372,7 +4372,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else {
@@ -4391,7 +4391,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 0, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'section' and $context->contextlevel == CONTEXT_COURSE) {
@@ -4406,7 +4406,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close();
+            \core\session\manager::write_close();
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'activity' and $context->contextlevel == CONTEXT_MODULE) {
@@ -4419,7 +4419,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close();
+            \core\session\manager::write_close();
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'automated' and $context->contextlevel == CONTEXT_COURSE) {
@@ -4434,7 +4434,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 0, 0, $forcedownload, array('preview' => $preview));
 
         } else {
@@ -4480,7 +4480,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 send_file_not_found();
             }
 
-            session_get_instance()->write_close(); // unlock session during fileserving
+            \core\session\manager::write_close(); // Unlock session during file serving.
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
         }
 
