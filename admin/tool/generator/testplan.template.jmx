@@ -14,17 +14,17 @@
           </elementProp>
           <elementProp name="users" elementType="Argument">
             <stringProp name="Argument.name">users</stringProp>
-            <stringProp name="Argument.value">{{USERS_PLACEHOLDER}}</stringProp>
+            <stringProp name="Argument.value">${__P(users,{{USERS_PLACEHOLDER}})}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="loops" elementType="Argument">
             <stringProp name="Argument.name">loops</stringProp>
-            <stringProp name="Argument.value">{{LOOPS_PLACEHOLDER}}</stringProp>
+            <stringProp name="Argument.value">${__P(loops,{{LOOPS_PLACEHOLDER}})}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="rampup" elementType="Argument">
             <stringProp name="Argument.name">rampup</stringProp>
-            <stringProp name="Argument.value">{{RAMPUP_PLACEHOLDER}}</stringProp>
+            <stringProp name="Argument.value">${__P(rampup,{{RAMPUP_PLACEHOLDER}})}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="host" elementType="Argument">
@@ -72,7 +72,7 @@
         <stringProp name="calcMode">all active threads (shared)</stringProp>
         <doubleProp>
           <name>throughput</name>
-          <value>120.0</value>
+          <value>${__P(throughput,120.0)}</value>
           <savedValue>0.0</savedValue>
         </doubleProp>
       </ConstantThroughputTimer>
