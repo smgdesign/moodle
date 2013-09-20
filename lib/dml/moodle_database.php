@@ -396,6 +396,7 @@ abstract class moodle_database {
             case SQL_QUERY_INSERT:
             case SQL_QUERY_UPDATE:
             case SQL_QUERY_STRUCTURE:
+            echo "$sql<br/>";
                 $this->writes++;
         }
 

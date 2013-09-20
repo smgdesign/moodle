@@ -44,7 +44,7 @@ define('MAX_COURSE_CATEGORIES', 10000);
  * Number of seconds to wait before updating lastaccess information in DB.
  */
 if (!defined('LASTACCESS_UPDATE_SECS')) {
-    define('LASTACCESS_UPDATE_SECS', 60);
+    define('LASTACCESS_UPDATE_SECS', 10);
 }
 
 /**
