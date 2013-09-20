@@ -43,7 +43,9 @@ define('MAX_COURSE_CATEGORIES', 10000);
 /**
  * Number of seconds to wait before updating lastaccess information in DB.
  */
-define('LASTACCESS_UPDATE_SECS', 60);
+if (!defined('LASTACCESS_UPDATE_SECS')) {
+    define('LASTACCESS_UPDATE_SECS', 60);
+}
 
 /**
  * Returns $user object of the main admin user
