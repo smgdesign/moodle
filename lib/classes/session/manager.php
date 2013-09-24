@@ -122,7 +122,7 @@ class manager {
         }
 
         // Find out which handler to use.
-        if (PHPUNIT_TEST) {
+        if (PHPUNIT_TEST || defined('BEHAT_TEST')) {
             $class = '\core\session\file';
 
         } else if (!empty($CFG->session_handler_class)) {
@@ -155,8 +155,8 @@ class manager {
             $_SESSION['USER']->mnethostid = 1;
         }
 
-        if (PHPUNIT_TEST) {
-            // Phpunit tests use reversed reference.
+        if (PHPUNIT_TEST || defined('BEHAT_TEST')) {
+            // Phpunit and behat tests use reversed reference.
             global $USER, $SESSION;
             $USER = $_SESSION['USER'];
             $SESSION = $_SESSION['SESSION'];
@@ -597,8 +597,8 @@ class manager {
         }
         sesskey(); // Init session key.
 
-        if (PHPUNIT_TEST) {
-            // Phpunit tests use reversed reference.
+        if (PHPUNIT_TEST || defined('BEHAT_TEST')) {
+            // Phpunit and behat use reversed reference.
             global $USER;
             $USER = $_SESSION['USER'];
             $_SESSION['USER'] =& $USER;
