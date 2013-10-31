@@ -61,7 +61,6 @@ class behat_repository_upload extends behat_files {
         $this->open_add_file_window($filepickernode, get_string('pluginname', 'repository_upload'));
 
         // Ensure all the form is ready.
-        $this->getSession()->wait(2 * 1000, false);
         $noformexception = new ExpectationException('The upload file form is not ready', $this->getSession());
         $this->find(
             'xpath',

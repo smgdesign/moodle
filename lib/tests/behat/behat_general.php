@@ -202,7 +202,7 @@ class behat_general extends behat_base {
             throw new DriverException('Waits are disabled in scenarios without Javascript support');
         }
 
-        $this->getSession()->wait(self::TIMEOUT, '(document.readyState === "complete")');
+        $this->getSession()->wait(self::TIMEOUT, self::PAGE_READY_JS);
     }
 
     /**

@@ -52,6 +52,11 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
     const TIMEOUT = 6;
 
     /**
+     * The JS code to check that the page is ready.
+     */
+    const PAGE_READY_JS = '(M && M.util && M.util.pending_js && !Boolean(M.util.pending_js.length))';
+
+    /**
      * Locates url, based on provided path.
      * Override to provide custom routing mechanism.
      *

@@ -240,9 +240,6 @@ class behat_files extends behat_base {
             $exception,
             $filepickernode
         );
-
-        // After removing the class FileManagerHelper.view_files() performs other actions.
-        $this->getSession()->wait(4 * 1000, false);
     }
 
 }

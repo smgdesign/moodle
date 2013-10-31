@@ -238,6 +238,8 @@ class behat_hooks extends behat_base {
             } catch (NoSuchWindow $nsw) {
                 // No javascript is running if there is no window right?
                 $pending = '';
+            } catch (UnknownError $e) {
+                $pending = '';
             }
             if ($pending === '') {
                 return;

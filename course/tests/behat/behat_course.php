@@ -171,10 +171,7 @@ class behat_course extends behat_base {
         // Ensures the section exists.
         $xpath = $this->section_exists($sectionnumber);
 
-        return array(
-            new Given('I click on "' . get_string('markthistopic') . '" "link" in the "' . $this->escape($xpath) . '" "xpath_element"'),
-            new Given('I wait "2" seconds')
-        );
+        return new Given('I click on "' . get_string('markthistopic') . '" "link" in the "' . $this->escape($xpath) . '" "xpath_element"');
     }
 
     /**
@@ -189,10 +186,7 @@ class behat_course extends behat_base {
         // Ensures the section exists.
         $xpath = $this->section_exists($sectionnumber);
 
-        return array(
-            new Given('I click on "' . get_string('markedthistopic') . '" "link" in the "' . $this->escape($xpath) . '" "xpath_element"'),
-            new Given('I wait "2" seconds')
-        );
+        return new Given('I click on "' . get_string('markedthistopic') . '" "link" in the "' . $this->escape($xpath) . '" "xpath_element"');
     }
 
     /**
@@ -204,11 +198,6 @@ class behat_course extends behat_base {
     public function i_show_section($sectionnumber) {
         $showlink = $this->show_section_icon_exists($sectionnumber);
         $showlink->click();
-
-        // It requires time.
-        if ($this->running_javascript()) {
-            $this->getSession()->wait(5000, false);
-        }
     }
 
     /**
@@ -220,11 +209,6 @@ class behat_course extends behat_base {
     public function i_hide_section($sectionnumber) {
         $hidelink = $this->hide_section_icon_exists($sectionnumber);
         $hidelink->click();
-
-        // It requires time.
-        if ($this->running_javascript()) {
-            $this->getSession()->wait(5000, false);
-        }
     }
 
     /**
@@ -533,8 +517,7 @@ class behat_course extends behat_base {
         $activity = $this->escape($activityname);
         return array(
             new Given('I click on "' . get_string('edittitle') . '" "link" in the "' . $activity .'" activity'),
-            new Given('I fill in "title" with "' . $this->escape($newactivityname) . chr(10) . '"'),
-            new Given('I wait "2" seconds')
+            new Given('I fill in "title" with "' . $this->escape($newactivityname) . chr(10) . '"')
         );
     }
 
@@ -578,10 +561,6 @@ class behat_course extends behat_base {
         }
         $steps[] = new Given('I click on "' . get_string('moveright') . '" "link" in the "' . $activity . '" activity');
 
-        if ($this->running_javascript()) {
-            $steps[] = new Given('I wait "2" seconds');
-        }
-
         return $steps;
     }
 
@@ -600,10 +579,6 @@ class behat_course extends behat_base {
             $steps[] = new Given('I open "' . $activity . '" actions menu');
         }
         $steps[] = new Given('I click on "' . get_string('moveleft') . '" "link" in the "' . $activity . '" activity');
-
-        if ($this->running_javascript()) {
-            $steps[] = new Given('I wait "2" seconds');
-        }
 
         return $steps;
 
@@ -629,8 +604,6 @@ class behat_course extends behat_base {
             $element->click();
 
             $this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
-
-            $this->getSession()->wait(2 * 1000, false);
 
         } else {
 
@@ -658,10 +631,7 @@ class behat_course extends behat_base {
             $steps[] = new Given('I open "' . $activity . '" actions menu');
         }
         $steps[] = new Given('I click on "' . get_string('duplicate') . '" "link" in the "' . $activity . '" activity');
-        if ($this->running_javascript()) {
-            // Temporary wait until MDL-41030 lands.
-            $steps[] = new Given('I wait "4" seconds');
-        } else {
+        if (!$this->running_javascript()) {
             $steps[] = new Given('I press "' . get_string('continue') .'"');
             $steps[] = new Given('I press "' . get_string('duplicatecontcourse') .'"');
         }
