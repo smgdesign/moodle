@@ -327,6 +327,11 @@ class behat_course extends behat_base {
 
                     // Non-JS browsers can not click on img elements.
                     if ($this->running_javascript()) {
+
+                        // Expanding the actions menu.
+                        $actionsmenu = $this->find('css', "a[role='menuitem']", false, $activity);
+                        $actionsmenu->click();
+
                         // To check that the visibility is not clickable we check the funcionality rather than the applied style.
                         $visibilityiconnode = $this->find('css', 'a.editing_show img', false, $activity);
                         $visibilityiconnode->click();
@@ -527,7 +532,6 @@ class behat_course extends behat_base {
         // Adding chr(10) to save changes.
         $activity = $this->escape($activityname);
         return array(
-            new Given('I open "' . $activity . '" actions menu'),
             new Given('I click on "' . get_string('edittitle') . '" "link" in the "' . $activity .'" activity'),
             new Given('I fill in "title" with "' . $this->escape($newactivityname) . chr(10) . '"'),
             new Given('I wait "2" seconds')
@@ -555,7 +559,7 @@ class behat_course extends behat_base {
             return;
         }
 
-        return new Given('I click on "' . get_string('actions', 'moodle') . '" "link" in the "' . $this->escape($activityname) . '" activity');
+        return new Given('I click on "a[role=\'menuitem\']" "css_element" in the "' . $this->escape($activityname) . '" activity');
     }
 
     /**
