@@ -658,8 +658,13 @@ class behat_course extends behat_base {
             $steps[] = new Given('I open "' . $activity . '" actions menu');
         }
         $steps[] = new Given('I click on "' . get_string('duplicate') . '" "link" in the "' . $activity . '" activity');
-        $steps[] = new Given('I press "' . get_string('continue') .'"');
-        $steps[] = new Given('I press "' . get_string('duplicatecontcourse') .'"');
+        if ($this->running_javascript()) {
+            // Temporary wait until MDL-41030 lands.
+            $steps[] = new Given('I wait "4" seconds');
+        } else {
+            $steps[] = new Given('I press "' . get_string('continue') .'"');
+            $steps[] = new Given('I press "' . get_string('duplicatecontcourse') .'"');
+        }
         return $steps;
     }
 
@@ -672,14 +677,31 @@ class behat_course extends behat_base {
      * @return Given[]
      */
     public function i_duplicate_activity_editing_the_new_copy_with($activityname, TableNode $data) {
+
         $steps = array();
+
         $activity = $this->escape($activityname);
+
         if ($this->running_javascript()) {
-            $steps[] = new Given('I open "' . $activity . '" actions menu');
+            $steps[] = new Given('I duplicate "' . $activity . '" activity');
+
+            // Determine the future new activity xpath from the former one.
+            $activityliteral = $this->getSession()->getSelectorsHandler()->xpathLiteral($activityname);
+            $duplicatedxpath = "//li[contains(concat(' ', normalize-space(@class), ' '), ' activity ')][contains(., $activityliteral)]" .
+                "/following-sibling::li";
+            $duplicatedactionsmenuxpath = $duplicatedxpath . "/descendant::a[@role='menuitem']";
+
+            // The next sibling of the former activity will be the duplicated one, so we click on it from it's xpath as, at
+            // this point, it don't even exists in the DOM (the steps are executed when we return them).
+            $steps[] = new Given('I click on "' . $this->escape($duplicatedactionsmenuxpath) . '" "xpath_element"');
+
+            // We force the xpath as otherwise mink tries to interact with the former one.
+            $steps[] = new Given('I click on "' . get_string('editsettings') . '" "link" in the "' . $this->escape($duplicatedxpath) . '" "xpath_element"');
+        } else {
+            $steps[] = new Given('I click on "' . get_string('duplicate') . '" "link" in the "' . $activity . '" activity');
+            $steps[] = new Given('I press "' . get_string('continue') .'"');
+            $steps[] = new Given('I press "' . get_string('duplicatecontedit') . '"');
         }
-        $steps[] = new Given('I click on "' . get_string('duplicate') . '" "link" in the "' . $activity . '" activity');
-        $steps[] = new Given('I press "' . get_string('continue') .'"');
-        $steps[] = new Given('I press "' . get_string('duplicatecontedit') . '"');
         $steps[] = new Given('I fill the moodle form with:', $data);
         $steps[] = new Given('I press "' . get_string('savechangesandreturntocourse') . '"');
         return $steps;
