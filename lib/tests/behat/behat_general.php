@@ -206,6 +206,40 @@ class behat_general extends behat_base {
     }
 
     /**
+     * Waits until the provided element selector exists in the DOM
+     *
+     * Using the protected method as this method will be usually
+     * called by other methods which are not returning a set of
+     * steps and performs the actions directly, so it would not
+     * be executed if it returns another step.
+
+     * @Given /^I wait until "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" exists$/
+     * @param string $element
+     * @param string $selector
+     * @return void
+     */
+    public function wait_until_exists($element, $selectortype) {
+        $this->ensure_element_exists($element, $selectortype);
+    }
+
+    /**
+     * Waits until the provided element does not exist in the DOM
+     *
+     * Using the protected method as this method will be usually
+     * called by other methods which are not returning a set of
+     * steps and performs the actions directly, so it would not
+     * be executed if it returns another step.
+
+     * @Given /^I wait until "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" does not exist$/
+     * @param string $element
+     * @param string $selector
+     * @return void
+     */
+    public function wait_until_does_not_exists($element, $selectortype) {
+        $this->ensure_element_does_not_exist($element, $selectortype);
+    }
+
+    /**
      * Generic mouse over action. Mouse over a element of the specified type.
      *
      * @When /^I hover "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)"$/

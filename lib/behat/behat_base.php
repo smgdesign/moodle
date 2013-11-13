@@ -49,7 +49,12 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
     /**
      * The timeout for each Behat step (load page, wait for an element to load...).
      */
-    const TIMEOUT = 6;
+    const TIMEOUT = 3;
+
+    /**
+     * And extended timeout for specific cases.
+     */
+    const EXTENDED_TIMEOUT = 10;
 
     /**
      * The JS code to check that the page is ready.
@@ -419,4 +424,68 @@ class behat_base extends Behat\MinkExtension\Context\RawMinkContext {
         return get_class($this->getSession()->getDriver()) !== 'Behat\Mink\Driver\GoutteDriver';
     }
 
+    /**
+     * Spins around an element until it exists
+     *
+     * @throws ExpectationException
+     * @param string $element
+     * @param string $selectortype
+     * @return void
+     */
+    protected function ensure_element_exists($element, $selectortype) {
+
+        // Getting the behat selector & locator.
+        list($selector, $locator) = $this->transform_selector($selectortype, $element);
+
+        // Exception if it timesout and the element is still there.
+        $msg = 'The ' . self::EXTENDED_TIMEOUT . ' seconds timeout expired and the element "' . $element . '" is not there';
+        $exception = new ExpectationException($msg, $this->getSession());
+
+        // Will stop spinning the find() return false.
+        $this->spin(
+            function($context, $args) {
+                // We don't use behat_base::find as it is already spinning.
+                if ($context->getSession()->getPage()->find($args['selector'], $args['locator'])) {
+                    return true;
+                }
+            },
+            array('selector' => $selector, 'locator' => $locator),
+            self::EXTENDED_TIMEOUT,
+            $exception,
+            true
+        );
+
+    }
+
+    /**
+     * Spins until the element does not exist
+     *
+     * @throws ExpectationException
+     * @param string $element
+     * @param string $selectortype
+     * @return void
+     */
+    protected function ensure_element_does_not_exist($element, $selectortype) {
+
+        // Getting the behat selector & locator.
+        list($selector, $locator) = $this->transform_selector($selectortype, $element);
+
+        // Exception if it timesout and the element is still there.
+        $msg = 'The ' . self::EXTENDED_TIMEOUT . ' seconds timeout expired and the "' . $element . '" element is still there';
+        $exception = new ExpectationException($msg, $this->getSession());
+
+        // Will stop spinning the find() return false.
+        $this->spin(
+            function($context, $args) {
+                // We don't use behat_base::find as it is already spinning.
+                if (!$context->getSession()->getPage()->find($args['selector'], $args['locator'])) {
+                    return true;
+                }
+            },
+            array('selector' => $selector, 'locator' => $locator),
+            self::EXTENDED_TIMEOUT,
+            $exception,
+            true
+        );
+    }
 }

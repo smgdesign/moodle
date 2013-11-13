@@ -59,11 +59,12 @@ Feature: Course activity controls works as expected
     And I click on "Edit settings" "link" in the "Test forum name 1" activity
     And I should see "Updating Forum"
     And I should see "Display description on course page"
-    And I press "Save and return to course"
+    And I follow "Course 1"
     And "#section-2" "css_element" <should_see_other_sections> exists
     And I open "Test forum name 1" actions menu
     And I click on "Hide" "link" in the "Test forum name 1" activity
     And "#section-2" "css_element" <should_see_other_sections> exists
+    And I close "Test forum name 1" actions menu
     And I duplicate "Test forum name 2" activity editing the new copy with:
       | Forum name | Edited test forum name 2 |
     And "#section-2" "css_element" <should_see_other_sections> exists
