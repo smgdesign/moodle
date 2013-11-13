@@ -15,12 +15,12 @@ Feature: Backup Moodle courses
       | data | C2 | data1 | Test data | Database description | 2 |
     And I log in as "admin"
 
-  @javascript
+  @javascript @MDL-42627
   Scenario: Backup a course providing options
     When I backup "Course 1" course using this options:
       | Filename | test_backup.mbz |
     Then I should see "Restore"
-    And I click on "Restore" "link" in the "test_backup.mbz" "table_row"
+    And I click on "Restore" "link" in the "test_backup.mbz" table row
     And I should see "URL of backup"
     And I should see "Anonymize user information"
 
