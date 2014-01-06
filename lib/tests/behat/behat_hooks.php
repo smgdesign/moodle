@@ -134,6 +134,10 @@ class behat_hooks extends behat_base {
             // Store the initial browser session opening.
             self::$lastbrowsersessionstart = time();
         }
+
+        if (!empty($CFG->behat_screenshots_path) && !is_writable($CFG->behat_screenshots_path)) {
+            throw new Exception('You set $CFG->behat_screenshots_path to a non-writable directory');
+        }
     }
 
     /**
@@ -258,6 +262,13 @@ class behat_hooks extends behat_base {
      * @AfterStep @javascript
      */
     public function after_step_javascript($event) {
+        global $CFG;
+
+        // Save a screenshot if the step failed.
+        if (!empty($CFG->behat_screenshots_path) &&
+                $event->getResult() === StepEvent::FAILED) {
+            $this->take_screenshot($event);
+        }
 
         try {
             $this->wait_for_pending_js();
@@ -279,18 +290,21 @@ class behat_hooks extends behat_base {
     }
 
     /**
-     * Take screenshot when step fails.
-     * Screenshot is saved at /tmp/
-     *
-     * @AfterStep
+     * Take screenshot when a step fails.
+     * @param StepEvent $event
      */
-    public function take_screenshot_after_failed_step(Behat\Behat\Event\StepEvent $event) {
+    protected function take_screenshot(StepEvent $event) {
         global $CFG;
 
-        if (!empty($CFG->behat_screenshot_after_failure) &&
-                $event->getResult() === Behat\Behat\Event\StepEvent::FAILED) {
-            $this->saveScreenshot();
+        // Goutte can't save screenshots.
+        if (!$this->running_javascript()) {
+            return false;
         }
+
+        // The time + scenario title + step text + random number.
+        $filename = $event->getStep()->getParent()->getTitle() . '_' . $event->getStep()->getText();
+        $filename = date('Y-m-d_H:i') . '_' . preg_replace('/([^a-zA-Z0-9\_]+)/', '-', $filename) . '_' . rand(1000, 9999) . '.png';
+        $this->saveScreenshot($filename, $CFG->behat_screenshots_path);
     }
 
     /**
