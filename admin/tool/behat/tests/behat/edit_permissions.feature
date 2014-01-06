@@ -15,7 +15,7 @@ Feature: Edit capabilities
       | user | course | role |
       | teacher1 | C1 | editingteacher |
 
-  @javascript
+  @javascript @MDL-43439
   Scenario: Default system capabilities modification
     Given I log in as "admin"
     And I set the following system permissions of "Teacher" role:
@@ -24,7 +24,7 @@ Feature: Edit capabilities
       | moodle/community:add | Inherit |
       | moodle/grade:managesharedforms | Prevent |
       | moodle/course:request | Prohibit |
-    When I follow "Edit Teacher role"
+    When I follow "Edit Teachesdfar role"
     Then the "block/mnet_hosts:myaddinstance" field should match "1" value
     And the "moodle/community:add" field should match "0" value
     And the "moodle/grade:managesharedforms" field should match "-1" value
