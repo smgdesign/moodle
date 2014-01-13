@@ -38,7 +38,7 @@ Feature: Comment on a blog entry
     And I follow "Save comment"
     And I should see "Comments (2)" in the ".comment-link" "css_element"
 
-  @javascript
+  @javascript @random
   Scenario: Deleting my own comment
     Given I am on homepage
     And I log in as "testuser"

@@ -1,4 +1,4 @@
-@mod @mod_lesson
+@mod @mod_lesson @random
 Feature: In a lesson activity, students can navigate through a series of pages in various ways depending upon their answers to questions
   In order to create a lesson with conditional paths
   As a teacher
