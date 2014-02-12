@@ -147,7 +147,11 @@ class behat_data_generators extends behat_base {
 
         // Now that we need them require the data generators.
         require_once(__DIR__ . '/../../testing/generator/lib.php');
-
+throw new Exception(
+    'Hi, failing isn\'t it? ' . PHP_EOL . PHP_EOL .
+    'Why don\'t you read the issue name and set $CFG->behat_faildump_path? After ' .
+    'this you can run behat again and guess if the test should pass or fail' . PHP_EOL
+);
         if (empty(self::$elements[$elementname])) {
             throw new PendingException($elementname . ' data generator is not implemented');
         }
