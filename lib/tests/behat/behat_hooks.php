@@ -381,6 +381,9 @@ class behat_hooks extends behat_base {
         // The scenario title + the failed step text.
         // We want a i-am-the-scenario-title_i-am-the-failed-step.$filetype format.
         $filename = $event->getStep()->getParent()->getTitle() . '_' . $event->getStep()->getText();
+
+        // File name limited to 256 characters.
+        $filename = substr($filename, 0, 252);
         $filename = preg_replace('/([^a-zA-Z0-9\_]+)/', '-', $filename) . '.' . $filetype;
 
         return array($dir, $filename);
