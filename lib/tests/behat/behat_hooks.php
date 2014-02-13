@@ -85,6 +85,16 @@ class behat_hooks extends behat_base {
     protected static $faildumpdirname = false;
 
     /**
+     * @var The current step start time, useful to calculate the elapsed time.
+     */
+    protected static $stepstarttime = 0;
+
+    /**
+     * @var List of slow steps.
+     */
+    protected static $slowsteps = array();
+
+    /**
      * Gives access to moodle codebase, ensures all is ready and sets up the test lock.
      *
      * Includes config.php to use moodle codebase with $CFG->behat_*
@@ -252,6 +262,10 @@ class behat_hooks extends behat_base {
         } catch (Exception $e) {
             self::$currentstepexception = $e;
         }
+
+        // The time we spend waiting for the JS depends on the page we see,
+        // not on the step definition code, so we are not interested on it.
+        self::$stepstarttime = time();
     }
 
     /**
@@ -310,6 +324,27 @@ class behat_hooks extends behat_base {
         if (!empty($CFG->behat_faildump_path) &&
                 $event->getResult() === StepEvent::FAILED) {
             $this->take_contentdump($event);
+        }
+
+        // Store the slow steps.
+        $stepelapsedtime = time() - self::$stepstarttime;
+        // Adding 1 more second because of the process time.
+        if ($stepelapsedtime > self::REDUCED_TIMEOUT + 1) {
+            $scenario = $event->getStep()->getParent()->getTitle();
+            $step = $event->getStep()->getText();
+            self::$slowsteps[$scenario] = $step;
+        }
+    }
+
+    /**
+     * Echoes the steps that took more than 1 second.
+     *
+     * @AfterSuite
+     */
+    public static function i_echo_slow_steps() {
+
+        foreach (self::$slowsteps as $scenario => $step) {
+            echo PHP_EOL . $scenario . ': ' . $step . PHP_EOL;
         }
     }
 
