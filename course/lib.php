@@ -3757,7 +3757,7 @@ function course_search_access($id) {
     }
 
     $context = context_course::instance($course->id);
-    if (!is_enrolled($context) && !is_viewing($context)) {
+    if (!is_enrolled($context) && !is_viewing($context) && !is_guest($context)) {
         return SEARCH_ACCESS_DENIED;
     }
 
