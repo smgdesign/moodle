@@ -77,14 +77,17 @@ Feature: Set up contextual data for tests
     And the following "courses" exists:
       | fullname | shortname |
       | Course 1 | C1 |
+    And the following "roles" exists:
+      | name | shortname | description | archetype |
+      | Custom editing teacher | customteacher | My custom role 1 | editingteacher |
     And the following "course enrolments" exists:
       | user | course | role |
       | student1 | C1 | student |
-      | teacher1 | C1 | editingteacher |
+      | teacher1 | C1 | customteacher |
     And the following "permission overrides" exists:
       | capability | permission | role | contextlevel | reference |
       | mod/forum:editanypost | Allow | student | Course | C1 |
-      | mod/forum:replynews | Prevent | editingteacher | Course | C1 |
+      | mod/forum:replynews | Prevent | customteacher | Course | C1 |
     When I log in as "admin"
     And I follow "Course 1"
     And I expand "Users" node
@@ -92,7 +95,7 @@ Feature: Set up contextual data for tests
     And I select "Student (1)" from "Advanced role override"
     Then the "mod/forum:editanypost" field should match "1" value
     And I press "Cancel"
-    And I select "Teacher (1)" from "Advanced role override"
+    And I select "Custom editing teacher (1)" from "Advanced role override"
     And the "mod/forum:replynews" field should match "-1" value
     And I press "Cancel"
 
