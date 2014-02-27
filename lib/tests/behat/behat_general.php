@@ -828,6 +828,12 @@ class behat_general extends behat_base {
      * @Given /^I trigger cron$/
      */
     public function i_trigger_cron() {
+        global $DB;
+
+        // Like it never ran before.
+        $DB->set_field('task_scheduled', 'lastruntime', 0);
+        $DB->set_field('task_scheduled', 'nextruntime', 0);
+
         $this->getSession()->visit($this->locate_path('/admin/cron.php'));
     }
 
