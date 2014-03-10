@@ -299,7 +299,10 @@ class behat_general extends behat_base {
     }
 
     /**
-     * Drags and drops the specified element to the specified container. This step does not work in all the browsers, consider it experimental.
+     * Drags and drops the specified element to the specified container.
+     *
+     * Drag and drop routine for Moodle elements that offer the drag handle
+     * "moodle-core-dragdrop-draghandle".
      *
      * The steps definitions calling this step as part of them should
      * manage the wait times by themselves as the times and when the
