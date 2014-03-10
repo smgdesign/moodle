@@ -535,7 +535,7 @@ class behat_course extends behat_base {
         // Ensure the destination is valid.
         $sectionxpath = $this->section_exists($sectionnumber);
 
-        $activitynode = $this->get_activity_element('.editing_move img', 'css_element', $activityname);
+        $activitynode = $this->get_activity_node($activityname);
 
         // JS enabled.
         if ($this->running_javascript()) {

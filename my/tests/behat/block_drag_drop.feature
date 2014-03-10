@@ -51,7 +51,7 @@ Feature: Blocks can be placed in the content area
     And I press "Save changes"
     Then "Online users" "block" should exist in the "<mainregion>" "region"
 
-    # Removing 'base' basetheme temporarly as it is now working.
+    # Removing 'base' theme here as it is not working even with MDL-41551 patch applied.
     Examples:
       | basetheme     | mainregion           |
       | bootstrapbase | block-region-content |
