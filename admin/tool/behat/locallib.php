@@ -60,17 +60,18 @@ class tool_behat {
             $filter .= '&&' . $type;
         }
 
+        // Get steps definitions from Behat.
+        $options = array(
+            '--config' => behat_config_manager::get_steps_list_config_filepath()
+        );
+
         if ($filter) {
-            $filteroption = ' -d "' . $filter . '"';
+            $options['-d'] = $filter;
         } else {
-            $filteroption = ' -di';
+            $options['-di'] = false;
         }
 
-        // Get steps definitions from Behat.
-        $options = ' --config="'.behat_config_manager::get_steps_list_config_filepath(). '" '.$filteroption;
-        list($steps, $code) = behat_command::run($options);
-
-        return $steps;
+        return behat_command::execute($options);
     }
 
 }

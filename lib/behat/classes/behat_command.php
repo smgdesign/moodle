@@ -27,6 +27,11 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
 
+use Behat\Behat\Console\BehatApplication,
+    Symfony\Component\Console\Input\ArgvInput,
+    Symfony\Component\Console\Input\ArrayInput,
+    Symfony\Component\Console\Output\ConsoleOutput;
+
 /**
  * Behat command related utils
  *
@@ -97,6 +102,7 @@ class behat_command {
      *
      * Execution continues when the process finishes
      *
+     * @deprecated
      * @param  string $options  Defaults to '' so tests would be executed
      * @return array            CLI command outputs [0] => string, [1] => integer
      */
@@ -109,6 +115,41 @@ class behat_command {
         chdir($currentcwd);
 
         return array($output, $code);
+    }
+
+    /**
+     * Executes the behat command with the provided options.
+     *
+     * @param array $options An associative array containing the options
+     * @return string The behat output.
+     */
+    public final static function execute($options = array()) {
+
+        // Options should be sent in order.
+        $args = array('behat');
+        if ($options) {
+            foreach ($options as $key => $value) {
+                $args[] = $key;
+
+                // Only if there is a value, as there are options without value.
+                if ($value) {
+                    $args[] = $value;
+                }
+            }
+        }
+
+        $behat = new BehatApplication('MOODLE');
+        $behat->setAutoExit(false);
+        $input = new ArgvInput($args);
+        $output = new ConsoleOutput(ConsoleOutput::VERBOSITY_DEBUG);
+
+        $result = $behat->run($input, $output);
+
+        if ($result != 0) {
+            behat_error(BEHAT_EXITCODE_CONFIG, 'Steps list can not be retrieved');
+        p 
+
+        return stream_get_contents($output->getStream());
     }
 
     /**
