@@ -2691,6 +2691,80 @@ class mod_forum_events_testcase extends advanced_testcase {
         // Checking that the event contains the expected values.
         $this->assertInstanceOf('\mod_forum\event\discussion_subscription_deleted', $event);
         $this->assertEquals($context, $event->get_context());
+    }
 
+    /**
+     * Test user_enrolment_deleted observer.
+     */
+    public function test_user_enrolment_deleted_observer() {
+        global $DB;
+
+        $forumgen = $this->getDataGenerator()->get_plugin_generator('mod_forum');
+
+        // Setup test data.
+        $course = $this->getDataGenerator()->create_course();
+        $trackedforum = $this->getDataGenerator()->create_module('forum', array('course' => $course->id, 'type' => 'general'));
+        $untrackedforum = $this->getDataGenerator()->create_module('forum', array('course' => $course->id, 'type' => 'general'));
+        // Used functions don't require these settings; adding
+        // them just in case APIs change in future.
+        $user = $this->getDataGenerator()->create_user(array(
+            'maildigest' => 1,
+            'trackforums' => 1
+        ));
+
+        $manplugin = enrol_get_plugin('manual');
+        $manual = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol'=>'manual'));
+        $student = $DB->get_record('role', array('shortname'=>'student'));
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, $student->id);
+
+        // There are not required, but in a real environment they are supposed to be required;
+        // adding them just in case APIs change in future.
+        set_config('forum_trackingtype', 1);
+        set_config('forum_trackreadposts', 1);
+
+        // Add a discussion to the tracked forum.
+        $record = array();
+        $record['course'] = $course->id;
+        $record['forum'] = $trackedforum->id;
+        $record['userid'] = $user->id;
+        $discussion = $forumgen->create_discussion($record);
+
+        // Add a post to the tracked forum.
+        $record = array();
+        $record['discussion'] = $discussion->id;
+        $record['userid'] = $user->id;
+        $post = $forumgen->create_post($record);
+
+        $this->assertEquals(0, $DB->count_records('forum_subscriptions'));
+
+        // Subscribe + set digest value + set tracking + read a post.
+        $forumgen->create_subscription(array(
+            'course' => $course->id,
+            'forum' => $trackedforum->id,
+            'userid' => $user->id
+        ));
+        forum_tp_add_read_record($user->id, $post->id);
+        forum_set_user_maildigest($trackedforum, 2, $user);
+        forum_tp_stop_tracking($untrackedforum->id, $user->id);
+
+        $this->assertEquals(1, $DB->count_records('forum_subscriptions'));
+        $this->assertEquals(1, $DB->count_records('forum_digests'));
+        $this->assertEquals(1, $DB->count_records('forum_track_prefs'));
+        $this->assertEquals(1, $DB->count_records('forum_read'));
+
+        // Unenrol the user.
+        $manplugin->unenrol_user($manual, $user->id);
+
+        // Forum digests are deleted by the observer.
+        $this->assertEquals(0, $DB->count_records('forum_digests'));
+
+        // Forum subscriptions are deleted by the observer.
+        $this->assertEquals(0, $DB->count_records('forum_subscriptions'));
+
+        // Forum tracking preferences are deleted by the observer.
+        $this->assertEquals(0, $DB->count_records('forum_track_prefs'));
+
+        // Read posts are deleted by the observer.
+        $this->assertEquals(0, $DB->count_records('forum_read'));
     }
 }
