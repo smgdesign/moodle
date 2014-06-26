@@ -443,7 +443,7 @@ class enrol_meta_plugin_testcase extends advanced_testcase {
     /**
      * Test user_enrolment_created event.
      */
-    public function test_user_enrolment_created_observer() {
+    public function test_user_enrolment_created_event() {
         global $DB;
 
         $this->resetAfterTest();
@@ -478,9 +478,47 @@ class enrol_meta_plugin_testcase extends advanced_testcase {
     }
 
     /**
-     * Test user_enrolment_deleted observer.
+     * Test the user_enrolment_created observer.
      */
-    public function test_user_enrolment_deleted_observer() {
+    public function test_user_enrolment_created_observer() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->enable_plugin();
+
+        $metaplugin = enrol_get_plugin('meta');
+        $manualplugin = enrol_get_plugin('manual');
+        $user1 = $this->getDataGenerator()->create_user();
+        $course1 = $this->getDataGenerator()->create_course();
+        $course2 = $this->getDataGenerator()->create_course();
+        $student = $DB->get_record('role', array('shortname' => 'student'));
+
+        $e1 = $metaplugin->add_instance($course2, array('customint1' => $course1->id));
+        $manualenrol = $DB->get_record('enrol', array('courseid' => $course1->id, 'enrol' => 'manual'));
+
+        // Enrol user, we let the observers capture the events.
+        $manualplugin->enrol_user($manualenrol, $user1->id, $student->id);
+
+        // Enrolment should be extended to the meta course.
+        $userenrolments = $DB->get_records('user_enrolments', null, 'timecreated ASC');
+        $this->assertEquals(2, count($userenrolments));
+
+        $manualenrol = array_shift($userenrolments);
+        $enrol = $DB->get_record('enrol', array('id' => $manualenrol->enrolid));
+        $this->assertEquals($course1->id, $enrol->courseid);
+        $this->assertEquals('manual', $enrol->enrol);
+
+        $metaenrol = array_shift($userenrolments);
+        $enrol = $DB->get_record('enrol', array('id' => $metaenrol->enrolid));
+        $this->assertEquals($course2->id, $enrol->courseid);
+        $this->assertEquals('meta', $enrol->enrol);
+    }
+
+    /**
+     * Test user_enrolment_deleted event.
+     */
+    public function test_user_enrolment_deleted_event() {
         global $DB;
 
         $this->resetAfterTest(true);
@@ -512,9 +550,45 @@ class enrol_meta_plugin_testcase extends advanced_testcase {
     }
 
     /**
+     * Test user_enrolment_deleted observer.
+     */
+    public function test_user_enrolment_deleted_observer() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $this->enable_plugin();
+
+        $metalplugin = enrol_get_plugin('meta');
+        $manualplugin = enrol_get_plugin('manual');
+        $user1 = $this->getDataGenerator()->create_user();
+        $course1 = $this->getDataGenerator()->create_course();
+        $course2 = $this->getDataGenerator()->create_course();
+        $student = $DB->get_record('role', array('shortname'=>'student'));
+
+        $e1 = $metalplugin->add_instance($course2, array('customint1' => $course1->id));
+
+        // Enrol user, we let the observers capture the events.
+        $manualenrol = $DB->get_record('enrol', array('courseid' => $course1->id, 'enrol' => 'manual'));
+
+        // Enrol user.
+        $manualplugin->enrol_user($manualenrol, $user1->id, $student->id);
+        $this->assertEquals(2, $DB->count_records('user_enrolments'));
+
+        // Unenrol user letting the observer capture event.
+        $manualplugin->unenrol_user($manualenrol, $user1->id);
+
+        // Using the default enrol_meta->unenrolaction value as we only
+        // need to check that the observer is correctly called; it
+        // unassigns the role keeping the user enrolment.
+        $this->assertEquals(0, $DB->count_records('role_assignments'));
+        $this->assertEquals(1, $DB->count_records('user_enrolments'));
+    }
+
+    /**
      * Test user_enrolment_updated event.
      */
-    public function test_user_enrolment_updated_observer() {
+    public function test_user_enrolment_updated_event() {
         global $DB;
 
         $this->resetAfterTest(true);
@@ -552,4 +626,36 @@ class enrol_meta_plugin_testcase extends advanced_testcase {
         $this->assertEventLegacyData($expectedlegacyeventdata, $event);
         $this->assertEventContextNotUsed($event);
     }
+
+    /**
+     * Test user_enrolment_updated observer.
+     */
+    public function test_user_enrolment_updated_observer() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $this->enable_plugin();
+
+        $metalplugin = enrol_get_plugin('meta');
+        $manualplugin = enrol_get_plugin('manual');
+        $user1 = $this->getDataGenerator()->create_user();
+        $course1 = $this->getDataGenerator()->create_course();
+        $course2 = $this->getDataGenerator()->create_course();
+        $student = $DB->get_record('role', array('shortname'=>'student'));
+
+        $e1 = $metalplugin->add_instance($course2, array('customint1' => $course1->id));
+
+        $manualenrol = $DB->get_record('enrol', array('courseid' => $course1->id, 'enrol' => 'manual'));
+
+        $manualplugin->enrol_user($manualenrol, $user1->id, $student->id);
+        $userenrolment = $DB->get_record('user_enrolments', array('enrolid' => $manualenrol->id, 'userid' => $user1->id));
+        $this->assertEquals(ENROL_USER_ACTIVE, $userenrolment->status);
+
+        $manualplugin->update_user_enrol($manualenrol, $user1->id, ENROL_USER_SUSPENDED);
+
+        $metauserenrolment = $DB->get_record('user_enrolments', array('enrolid' => $e1, 'userid' => $user1->id));
+        $this->assertEquals(ENROL_USER_SUSPENDED, $metauserenrolment->status);
+    }
+
 }
