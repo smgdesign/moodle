@@ -750,6 +750,13 @@ $CFG->admin = 'admin';
 // Note that, for now, this only used by the profiling features
 // (Development->Profiling) built into Moodle.
 //      $CFG->pathtodot = '';
+//
+//=========================================================================
+// 14. FILE STORAGES
+//=========================================================================
+// Select the file storage method.
+// $CFG->storagemethod = 'filesystem';
+//
 
 //=========================================================================
 // ALL DONE!  To continue installation, visit your main page with a browser

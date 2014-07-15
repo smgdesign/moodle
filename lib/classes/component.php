@@ -380,6 +380,7 @@ $cache = '.var_export($cache, true).';
             'rss'         => $CFG->dirroot.'/rss',
             'role'        => $CFG->dirroot.'/'.$CFG->admin.'/roles',
             'search'      => null,
+            'storage'     => $CFG->dirroot.'/storage',
             'table'       => null,
             'tag'         => $CFG->dirroot.'/tag',
             'timezones'   => null,
@@ -427,6 +428,7 @@ $cache = '.var_export($cache, true).';
             'tool'          => $CFG->dirroot.'/'.$CFG->admin.'/tool',
             'cachestore'    => $CFG->dirroot.'/cache/stores',
             'cachelock'     => $CFG->dirroot.'/cache/locks',
+            'storage'       => $CFG->dirroot.'/storage/methods'
         );
         $parents = array();
         $subplugins = array();

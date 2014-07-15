@@ -395,6 +395,26 @@ if ($hassiteconfig && !empty($CFG->enableplagiarism)) {
 }
 $ADMIN->add('reports', new admin_externalpage('comments', new lang_string('comments'), $CFG->wwwroot.'/comment/', 'moodle/site:viewreports'));
 
+// File storages.
+if ($hassiteconfig) {
+    $ADMIN->add('modules', new admin_category('storages', new lang_string('type_storage_plural', 'plugin')));
+    $temp = new admin_settingpage('managestorages', new lang_string('managestorages', 'storage'));
+
+    $storagemethods = array();
+    foreach (core_plugin_manager::instance()->get_plugins_of_type('storage') as $plugin) {
+        $plugin->load_settings($ADMIN, 'storages', $hassiteconfig);
+        $storagemethods[$plugin->name] = $plugin->displayname;
+    }
+
+    $temp->add(new admin_setting_configselect('storagemethod',
+        new lang_string('storagemethod', 'storage'),
+        new lang_string('storagemethodhelp', 'storage'),
+        \core\plugininfo\storage::get_default_method(),
+        $storagemethods
+    ));
+    $ADMIN->add('storages', $temp);
+}
+
 // Course reports settings
 if ($hassiteconfig) {
     $pages = array();

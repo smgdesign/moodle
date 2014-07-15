@@ -1121,6 +1121,10 @@ class core_plugin_manager {
                 'objectives'
             ),
 
+            'storage' => array(
+                'filesystem'
+            ),
+
             'tinymce' => array(
                 'ctrlhelp', 'managefiles', 'moodleemoticon', 'moodleimage',
                 'moodlemedia', 'moodlenolink', 'pdw', 'spellchecker', 'wrap'
