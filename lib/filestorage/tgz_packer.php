@@ -131,10 +131,10 @@ class tgz_packer extends file_packer {
      * Wrapper function useful for deleting an existing file (if present) just
      * before creating a new one.
      *
-     * @param file_storage $fs File storage
+     * @param \core_storage\storage $fs File storage
      * @param array $filerecord File record in same format used to create file
      */
-    public static function delete_existing_file_record(file_storage $fs, array $filerecord) {
+    public static function delete_existing_file_record(\core_storage\storage $fs, array $filerecord) {
         if ($existing = $fs->get_file($filerecord['contextid'], $filerecord['component'],
                 $filerecord['filearea'], $filerecord['itemid'], $filerecord['filepath'],
                 $filerecord['filename'])) {

@@ -40,7 +40,7 @@ require_once($CFG->dirroot . '/lib/filestorage/file_progress.php');
  * @since     Moodle 2.0
  */
 class stored_file {
-    /** @var file_storage file storage pool instance */
+    /** @var \core_storage\storage file storage pool instance */
     private $fs;
     /** @var stdClass record from the files table left join files_reference table */
     private $file_record;
@@ -61,13 +61,13 @@ class stored_file {
 
 
     /**
-     * Constructor, this constructor should be called ONLY from the file_storage class!
+     * Constructor, this constructor should be called ONLY from the \core_storage\storage class!
      *
-     * @param file_storage $fs file  storage instance
+     * @param \core_storage\storage $fs file  storage instance
      * @param stdClass $file_record description of file
      * @param string $filedir location of file directory with sh1 named content files
      */
-    public function __construct(file_storage $fs, stdClass $file_record, $filedir) {
+    public function __construct(\core_storage\storage $fs, stdClass $file_record, $filedir) {
         global $DB, $CFG;
         $this->fs          = $fs;
         $this->file_record = clone($file_record); // prevent modifications
