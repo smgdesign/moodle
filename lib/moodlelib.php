@@ -6230,23 +6230,9 @@ function get_file_storage() {
         return $fs;
     }
 
-    require_once("$CFG->libdir/filelib.php");
-
-    if (isset($CFG->filedir)) {
-        $filedir = $CFG->filedir;
-    } else {
-        $filedir = $CFG->dataroot.'/filedir';
-    }
-
-    if (isset($CFG->trashdir)) {
-        $trashdirdir = $CFG->trashdir;
-    } else {
-        $trashdirdir = $CFG->dataroot.'/trashdir';
-    }
-
-    $fs = new file_storage($filedir, $trashdirdir, "$CFG->tempdir/filestorage", $CFG->directorypermissions, $CFG->filepermissions);
-
-    return $fs;
+    // The $CFG->storagemethod var will be set.
+    $fullclassname = '\storage_' . $CFG->storagemethod . '\storage';
+    return new $fullclassname();
 }
 
 /**
