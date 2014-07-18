@@ -18,7 +18,7 @@
  * File system storage method.
  *
  * @package    storage_filesystem
- * @copyright  2014 David Monllao <davidm@moodle.com>
+ * @copyright  2008 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,21 +31,21 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package    core
  * @category   storage
- * @copyright  2014 David Monllao <davidm@moodle.com>
+ * @copyright  2008 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class storage extends \core_storage\storage {
 
     /** @var string Directory with file contents */
-    private $filedir;
+    protected $filedir;
     /** @var string Contents of deleted files not needed any more */
-    private $trashdir;
+    protected $trashdir;
     /** @var string tempdir */
-    private $tempdir;
+    protected $tempdir;
     /** @var int Permissions for new directories */
-    private $dirpermissions;
+    protected $dirpermissions;
     /** @var int Permissions for new files */
-    private $filepermissions;
+    protected $filepermissions;
 
     /**
      * Constructor - do not use directly use {@link get_file_storage()} call instead.
@@ -56,14 +56,28 @@ class storage extends \core_storage\storage {
      * @param int $dirpermissions new directory permissions
      * @param int $filepermissions new file permissions
      */
-    public function __construct($filedir, $trashdir, $tempdir, $dirpermissions, $filepermissions) {
+    public function __construct() {
         global $CFG;
 
+        require_once("$CFG->libdir/filelib.php");
+
+        if (isset($CFG->filedir)) {
+            $filedir = $CFG->filedir;
+        } else {
+            $filedir = $CFG->dataroot.'/filedir';
+        }
+
+        if (isset($CFG->trashdir)) {
+            $trashdirdir = $CFG->trashdir;
+        } else {
+            $trashdirdir = $CFG->dataroot.'/trashdir';
+        }
+
         $this->filedir         = $filedir;
-        $this->trashdir        = $trashdir;
-        $this->tempdir         = $tempdir;
-        $this->dirpermissions  = $dirpermissions;
-        $this->filepermissions = $filepermissions;
+        $this->trashdir        = $trashdirdir;
+        $this->tempdir         = $CFG->tempdir . '/filestorage';
+        $this->dirpermissions  = $CFG->directorypermissions;
+        $this->filepermissions = $CFG->filepermissions;
 
         // make sure the file pool directory exists
         if (!is_dir($this->filedir)) {
@@ -142,10 +156,10 @@ class storage extends \core_storage\storage {
      * Create instance of file class from database record.
      *
      * @param stdClass $filerecord record from the files table left join files_reference table
-     * @return \stored_file instance of file abstraction class
+     * @return \storage_filesystem\stored_file instance of file abstraction class
      */
     public function get_file_instance(\stdClass $filerecord) {
-        $storedfile = new \stored_file($this, $filerecord, $this->filedir);
+        $storedfile = new \storage_filesystem\stored_file($this, $filerecord, $this->filedir);
         return $storedfile;
     }
 
@@ -156,11 +170,11 @@ class storage extends \core_storage\storage {
      * future, the support for other mimetypes can be added, too (eg. generate an image
      * preview of PDF, text documents etc).
      *
-     * @param \stored_file $file the file we want to preview
+     * @param \storage_filesystem\stored_file $file the file we want to preview
      * @param string $mode preview mode, eg. 'thumb'
-     * @return \stored_file|bool false if unable to create the preview, stored file otherwise
+     * @return \storage_filesystem\stored_file|bool false if unable to create the preview, stored file otherwise
      */
-    public function get_file_preview(stored_file $file, $mode) {
+    public function get_file_preview(\storage_filesystem\stored_file $file, $mode) {
 
         $context = \context_system::instance();
         $path = '/' . trim($mode, '/') . '/';
@@ -327,11 +341,11 @@ class storage extends \core_storage\storage {
     /**
      * Generates a preview image for the stored file
      *
-     * @param \stored_file $file the file we want to preview
+     * @param \storage_filesystem\stored_file $file the file we want to preview
      * @param string $mode preview mode, eg. 'thumb'
-     * @return \stored_file|bool the newly created preview file or false
+     * @return \storage_filesystem\stored_file|bool the newly created preview file or false
      */
-    protected function create_file_preview(stored_file $file, $mode) {
+    protected function create_file_preview(\storage_filesystem\stored_file $file, $mode) {
 
         $mimetype = $file->get_mimetype();
 
@@ -377,11 +391,11 @@ class storage extends \core_storage\storage {
     /**
      * Generates a preview for the stored image file
      *
-     * @param \stored_file $file the image we want to preview
+     * @param \storage_filesystem\stored_file $file the image we want to preview
      * @param string $mode preview mode, eg. 'thumb'
      * @return string|bool false if a problem occurs, the thumbnail image data otherwise
      */
-    protected function create_imagefile_preview(stored_file $file, $mode) {
+    protected function create_imagefile_preview(\storage_filesystem\stored_file $file, $mode) {
         global $CFG;
         require_once($CFG->libdir.'/gdlib.php');
 
@@ -414,7 +428,7 @@ class storage extends \core_storage\storage {
      * pathname hashes instead.
      *
      * @param int $fileid file ID
-     * @return \stored_file|bool stored_file instance if exists, false if not
+     * @return \storage_filesystem\stored_file|bool \storage_filesystem\stored_file instance if exists, false if not
      */
     public function get_file_by_id($fileid) {
         global $DB;
@@ -435,7 +449,7 @@ class storage extends \core_storage\storage {
      * Fetch file using local file full pathname hash
      *
      * @param string $pathnamehash path name hash
-     * @return \stored_file|bool stored_file instance if exists, false if not
+     * @return \storage_filesystem\stored_file|bool \storage_filesystem\stored_file instance if exists, false if not
      */
     public function get_file_by_hash($pathnamehash) {
         global $DB;
@@ -461,7 +475,7 @@ class storage extends \core_storage\storage {
      * @param int $itemid item ID
      * @param string $filepath file path
      * @param string $filename file name
-     * @return \stored_file|bool stored_file instance if exists, false if not
+     * @return \storage_filesystem\stored_file|bool \storage_filesystem\stored_file instance if exists, false if not
      */
     public function get_file($contextid, $component, $filearea, $itemid, $filepath, $filename) {
         $filepath = clean_param($filepath, PARAM_PATH);
@@ -543,7 +557,7 @@ class storage extends \core_storage\storage {
      * @param int $itemid item ID or all files if not specified
      * @param string $sort A fragment of SQL to use for sorting
      * @param bool $includedirs whether or not include directories
-     * @return \stored_file[] array of stored_files indexed by pathanmehash
+     * @return \storage_filesystem\stored_file[] array of \storage_filesystem\stored_files indexed by pathanmehash
      */
     public function get_area_files($contextid, $component, $filearea, $itemid = false, $sort = "itemid, filepath, filename", $includedirs = true) {
         global $DB;
@@ -662,7 +676,7 @@ class storage extends \core_storage\storage {
      * @param bool $recursive include all subdirectories
      * @param bool $includedirs include files and directories
      * @param string $sort A fragment of SQL to use for sorting
-     * @return array of stored_files indexed by pathanmehash
+     * @return array of \storage_filesystem\stored_files indexed by pathanmehash
      */
     public function get_directory_files($contextid, $component, $filearea, $itemid, $filepath, $recursive = false, $includedirs = true, $sort = "filepath, filename") {
         global $DB;
@@ -942,13 +956,13 @@ class storage extends \core_storage\storage {
      * Add new local file based on existing local file.
      *
      * @param stdClass|array $filerecord object or array describing changes
-     * @param \stored_file|int $fileorid id or stored_file instance of the existing local file
-     * @return \stored_file instance of newly created file
+     * @param \storage_filesystem\stored_file|int $fileorid id or \storage_filesystem\stored_file instance of the existing local file
+     * @return \storage_filesystem\stored_file instance of newly created file
      */
     public function create_file_from_storedfile($filerecord, $fileorid) {
         global $DB;
 
-        if ($fileorid instanceof \stored_file) {
+        if ($fileorid instanceof \storage_filesystem\stored_file) {
             $fid = $fileorid->get_id();
         } else {
             $fid = $fileorid;
@@ -1071,7 +1085,7 @@ class storage extends \core_storage\storage {
      * @param string $url the URL to the file
      * @param array $options {@link download_file_content()} options
      * @param bool $usetempfile use temporary file for download, may prevent out of memory problems
-     * @return \stored_file
+     * @return \storage_filesystem\stored_file
      */
     public function create_file_from_url($filerecord, $url, array $options = null, $usetempfile = false) {
 
@@ -1124,7 +1138,7 @@ class storage extends \core_storage\storage {
      *
      * @param stdClass|array $filerecord object or array describing file
      * @param string $pathname path to file or content of file
-     * @return \stored_file
+     * @return \storage_filesystem\stored_file
      */
     public function create_file_from_pathname($filerecord, $pathname) {
         global $DB;
@@ -1239,7 +1253,7 @@ class storage extends \core_storage\storage {
      *
      * @param stdClass|array $filerecord object or array describing file
      * @param string $content content of file
-     * @return \stored_file
+     * @return \storage_filesystem\stored_file
      */
     public function create_file_from_string($filerecord, $content) {
         global $DB;
@@ -1358,7 +1372,7 @@ class storage extends \core_storage\storage {
      * @param int $repositoryid the id of the repository that provides the original file
      * @param string $reference the information required by the repository to locate the original file
      * @param array $options options for creating the new file
-     * @return \stored_file
+     * @return \storage_filesystem\stored_file
      */
     public function create_file_from_reference($filerecord, $repositoryid, $reference, $options = array()) {
         global $DB;
@@ -1490,12 +1504,12 @@ class storage extends \core_storage\storage {
      * Creates new image file from existing.
      *
      * @param stdClass|array $filerecord object or array describing new file
-     * @param int|stored_file $fid file id or stored file object
+     * @param int|\storage_filesystem\stored_file $fid file id or stored file object
      * @param int $newwidth in pixels
      * @param int $newheight in pixels
      * @param bool $keepaspectratio whether or not keep aspect ratio
      * @param int $quality depending on image type 0-100 for jpeg, 0-9 (0 means no compression) for png
-     * @return \stored_file
+     * @return \storage_filesystem\stored_file
      */
     public function convert_image($filerecord, $fid, $newwidth = null, $newheight = null, $keepaspectratio = true, $quality = null) {
         if (!function_exists('imagecreatefromstring')) {
@@ -1504,7 +1518,7 @@ class storage extends \core_storage\storage {
             throw new \file_exception('storedfileproblem', 'imagecreatefromstring() doesnt exist. The PHP extension "GD" must be installed for image conversion.');
         }
 
-        if ($fid instanceof \stored_file) {
+        if ($fid instanceof \storage_filesystem\stored_file) {
             $fid = $fid->get_id();
         }
 
@@ -1827,7 +1841,7 @@ class storage extends \core_storage\storage {
     /**
      * Tries to recover missing content of file from trash.
      *
-     * @param \stored_file $file stored_file instance
+     * @param \storage_filesystem\stored_file $file \storage_filesystem\stored_file instance
      * @return bool success
      */
     public function try_content_recovery($file) {
@@ -1948,9 +1962,9 @@ class storage extends \core_storage\storage {
     }
 
     /**
-     * Returns all aliases that refer to some stored_file via the given reference
+     * Returns all aliases that refer to some \storage_filesystem\stored_file via the given reference
      *
-     * All repositories that provide access to a stored_file are expected to use
+     * All repositories that provide access to a \storage_filesystem\stored_file are expected to use
      * {@link self::pack_reference()}. This method can't be used if the given reference
      * does not use this format or if you are looking for references to an external file
      * (for example it can't be used to search for all aliases that refer to a given
@@ -1959,7 +1973,7 @@ class storage extends \core_storage\storage {
      * Aliases in user draft areas are excluded from the returned list.
      *
      * @param string $reference identification of the referenced file
-     * @return array of stored_file indexed by its pathnamehash
+     * @return array of \storage_filesystem\stored_file indexed by its pathnamehash
      */
     public function search_references($reference) {
         global $DB;
@@ -1991,9 +2005,9 @@ class storage extends \core_storage\storage {
     }
 
     /**
-     * Returns the number of aliases that refer to some stored_file via the given reference
+     * Returns the number of aliases that refer to some \storage_filesystem\stored_file via the given reference
      *
-     * All repositories that provide access to a stored_file are expected to use
+     * All repositories that provide access to a \storage_filesystem\stored_file are expected to use
      * {@link self::pack_reference()}. This method can't be used if the given reference
      * does not use this format or if you are looking for references to an external file
      * (for example it can't be used to count aliases that refer to a given Dropbox or
@@ -2028,14 +2042,14 @@ class storage extends \core_storage\storage {
     }
 
     /**
-     * Returns all aliases that link to the given stored_file
+     * Returns all aliases that link to the given \storage_filesystem\stored_file
      *
      * Aliases in user draft areas are excluded from the returned list.
      *
-     * @param \stored_file $storedfile
-     * @return array of stored_file
+     * @param \storage_filesystem\stored_file $storedfile
+     * @return array of \storage_filesystem\stored_file
      */
-    public function get_references_by_storedfile(stored_file $storedfile) {
+    public function get_references_by_storedfile(\storage_filesystem\stored_file $storedfile) {
         global $DB;
 
         $params = array();
@@ -2050,14 +2064,14 @@ class storage extends \core_storage\storage {
     }
 
     /**
-     * Returns the number of aliases that link to the given stored_file
+     * Returns the number of aliases that link to the given \storage_filesystem\stored_file
      *
      * Aliases in user draft areas are not counted.
      *
-     * @param \stored_file $storedfile
+     * @param \storage_filesystem\stored_file $storedfile
      * @return int
      */
-    public function get_references_count_by_storedfile(stored_file $storedfile) {
+    public function get_references_count_by_storedfile(\storage_filesystem\stored_file $storedfile) {
         global $DB;
 
         $params = array();
@@ -2075,9 +2089,9 @@ class storage extends \core_storage\storage {
      * Updates all files that are referencing this file with the new contenthash
      * and filesize
      *
-     * @param \stored_file $storedfile
+     * @param \storage_filesystem\stored_file $storedfile
      */
-    public function update_references_to_storedfile(stored_file $storedfile) {
+    public function update_references_to_storedfile(\storage_filesystem\stored_file $storedfile) {
         global $CFG, $DB;
         $params = array();
         $params['contextid'] = $storedfile->get_contextid();
@@ -2106,11 +2120,11 @@ class storage extends \core_storage\storage {
      *
      * @throws moodle_exception if file could not be downloaded
      *
-     * @param \stored_file $storedfile a stored_file instances
+     * @param \storage_filesystem\stored_file $storedfile a \storage_filesystem\stored_file instances
      * @param int $maxbytes throw an exception if file size is bigger than $maxbytes (0 means no limit)
-     * @return \stored_file stored_file
+     * @return \storage_filesystem\stored_file \storage_filesystem\stored_file
      */
-    public function import_external_file(stored_file $storedfile, $maxbytes = 0) {
+    public function import_external_file(\storage_filesystem\stored_file $storedfile, $maxbytes = 0) {
         global $CFG;
         $storedfile->import_external_file_contents($maxbytes);
         $storedfile->delete_reference();

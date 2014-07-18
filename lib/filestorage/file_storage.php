@@ -57,7 +57,6 @@ class file_storage {
      */
     public function __construct($filedir, $trashdir, $tempdir, $dirpermissions, $filepermissions) {
         $this->storagefilesystem = new \storage_filesystem\storage($filedir, $trashdir, $tempdir, $dirpermissions, $filepermissions);
-
         return $this;
     }
 

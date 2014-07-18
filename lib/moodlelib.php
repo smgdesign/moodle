@@ -6230,7 +6230,10 @@ function get_file_storage() {
         return $fs;
     }
 
-    // The $CFG->storagemethod var will be set.
+    // $CFG->storagemethod has to be set.
+    if (empty($CFG->storagemethod)) {
+        $CFG->storagemethod = \core\plugininfo\storage::get_default_method();
+    }
     $fullclassname = '\storage_' . $CFG->storagemethod . '\storage';
     return new $fullclassname();
 }
