@@ -40,8 +40,8 @@ $focus = '';
 
 if (empty($adminroot->errors) and $newsettingshtml === '') {
     // there must be either redirect without message or continue button or else upgrade would be sometimes broken
-    if ($return == 'site') {
-        redirect("$CFG->wwwroot/");
+    if ($return == 'disableadvanced') {
+        redirect("$CFG->wwwroot/$CFG->admin/disableadvanced.php");
     } else {
         redirect("$CFG->wwwroot/$CFG->admin/index.php");
     }

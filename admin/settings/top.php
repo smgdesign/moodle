@@ -22,6 +22,8 @@ $ADMIN->add('root', new admin_externalpage('siteregistrationconfirmed',
  // hidden upgrade script
 $ADMIN->add('root', new admin_externalpage('upgradesettings', new lang_string('upgradesettings', 'admin'), "$CFG->wwwroot/$CFG->admin/upgradesettings.php", 'moodle/site:config', true));
 
+$ADMIN->add('root', new admin_externalpage('disableadvanced', new lang_string('disableadvanced', 'admin'), "$CFG->wwwroot/$CFG->admin/disableadvanced.php", 'moodle/site:config', true));
+
 if ($hassiteconfig) {
     $optionalsubsystems = new admin_settingpage('optionalsubsystems', new lang_string('advancedfeatures', 'admin'));
     $ADMIN->add('root', $optionalsubsystems);

@@ -522,7 +522,7 @@ if (empty($site->shortname)) {
     // probably new installation - lets return to frontpage after this step
     // remove settings that we want uninitialised
     unset_config('registerauth');
-    redirect('upgradesettings.php?return=site');
+    redirect('upgradesettings.php?return=disableadvanced');
 }
 
 // Check if we are returning from moodle.org registration and if so, we mark that fact to remove reminders
