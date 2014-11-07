@@ -947,9 +947,9 @@ class core_renderer extends renderer_base {
         if (MDL_PERF_TEST && strpos($footer, $this->unique_performance_info_token) === false) {
             $footer = $this->unique_performance_info_token . $footer;
         }
-        $footer = str_replace($this->unique_performance_info_token, $performanceinfo, $footer);
+        //$footer = str_replace($this->unique_performance_info_token, $performanceinfo, $footer);
 
-        $footer = str_replace($this->unique_end_html_token, $this->page->requires->get_end_code(), $footer);
+        //$footer = str_replace($this->unique_end_html_token, $this->page->requires->get_end_code(), $footer);
 
         $this->page->set_state(moodle_page::STATE_DONE);
 

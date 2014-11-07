@@ -137,6 +137,10 @@ class core_shutdown_manager {
                 $perf = get_performance_info();
                 error_log("PERF: " . $perf['txt']);
             }
+            if (defined('MDL_PERFTOFOOT')) {
+                $perf = get_performance_info();
+                echo $perf['html'];
+            }
             if (defined('MDL_PERFINC')) {
                 $inc = get_included_files();
                 $ts  = 0;
