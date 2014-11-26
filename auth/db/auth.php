@@ -105,7 +105,7 @@ class auth_plugin_db extends auth_plugin_base {
 
             $authdb = $this->db_init();
 
-            $rs = $authdb->Execute("SELECT {$this->config->fieldpass}
+            $rs = $authdb->Execute("SELECT {$this->config->fieldpass} as \"{$this->config->fieldpass}\"
                                       FROM {$this->config->table}
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
