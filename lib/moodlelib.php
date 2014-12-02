@@ -9007,6 +9007,10 @@ function get_performance_info() {
     $info['html'] .= '<span class="dbtime">DB queries time: '.$info['dbtime'].' secs</span> ';
     $info['txt'] .= 'db queries time: ' . $info['dbtime'] . 's ';
 
+    // Repeated db reads.
+    $info['txt'] .= 'repeated db reads: ' . $DB->perf_get_repeated_db_reads() . ' ';
+    $info['html'] .= '<span class="repeateddbreads">Repeated DB reads: ' . $DB->perf_get_repeated_db_reads() . '</span>';
+
     if (function_exists('posix_times')) {
         $ptimes = posix_times();
         if (is_array($ptimes)) {

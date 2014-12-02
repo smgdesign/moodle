@@ -93,6 +93,10 @@ abstract class moodle_database {
     protected $writes = 0;
     /** @var float Time queries took to finish, seconds with microseconds.*/
     protected $queriestime = 0;
+    /** @var array Queries list. */
+    protected $queries = array();
+    /** @var int Number of repeated queries */
+    protected $repeateddbreads = 0;
 
     /** @var int Debug level. */
     protected $debug  = 0;
@@ -465,6 +469,19 @@ abstract class moodle_database {
 
         // Will be shown or not depending on MDL_PERF values rather than in dboptions['log*].
         $this->queriestime = $this->queriestime + $time;
+
+        // Save a hash including params.
+        $paramsstr = '';
+        if ($this->last_params) {
+            ksort($this->last_params);
+            $paramsstr = json_encode($this->last_params);
+        }
+        $key = md5($this->last_sql . $paramsstr);
+        if (!empty($this->queries[$key])) {
+            $this->repeateddbreads++;
+        } else {
+            $this->queries[$key] = $key;
+        }
 
         if ($logall or ($logslow and ($logslow < ($time+0.00001))) or ($iserror and $logerrors)) {
             $this->loggingquery = true;
@@ -2553,5 +2570,9 @@ abstract class moodle_database {
      */
     public function perf_get_queries_time() {
         return $this->queriestime;
+    }
+
+    public function perf_get_repeated_db_reads() {
+        return $this->repeateddbreads;
     }
 }
