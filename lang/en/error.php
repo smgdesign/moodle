@@ -205,6 +205,7 @@ $string['ddltablealreadyexists'] = 'Table "{$a}" already exists';
 $string['ddltablenotexist'] = 'Table "{$a}" does not exist';
 $string['ddlunknownerror'] = 'Unknown DDL library error';
 $string['ddlxmlfileerror'] = 'XML database file errors found';
+$string['deprecatedexternalfunction'] = 'This web service function is deprecated, use "{$a}" function instead.';
 $string['destinationcmnotexit'] = 'The destination course module does not exist';
 $string['detectedbrokenplugin'] = 'Plugin "{$a}" is defective or outdated, can not continue, sorry.';
 $string['dmlexceptiononinstall'] = '<p>A database error has occurred [{$a->errorcode}].<br />{$a->debuginfo}</p>';

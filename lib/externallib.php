@@ -124,6 +124,32 @@ class restricted_context_exception extends moodle_exception {
 }
 
 /**
+ * Exception indicating the web service function is deprecated.
+ *
+ * @since     Moodle 2.9
+ * @package   core_webservice
+ * @copyright 2014 David Monllaó
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class deprecated_external_function extends moodle_exception {
+
+    /**
+     * Constructor.
+     *
+     * @throws coding_exception
+     * @param string $replacementservice
+     * @return void
+     */
+    function __construct($replacementfunction) {
+
+        if (!is_string($replacementfunction)) {
+            throw new coding_exception('You should specify the replacement function name');
+        }
+        return parent::__construct('deprecatedexternalfunction', 'error', '', $replacementfunction);
+    }
+}
+
+/**
  * Base class for external api methods.
  *
  * @package    core_webservice
