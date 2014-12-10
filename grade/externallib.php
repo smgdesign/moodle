@@ -40,8 +40,14 @@ class core_grade_external extends external_api {
         return core_grading_external::get_definitions_parameters();
     }
 
+    /**
+     * @throws deprecated_external_function
+     * @since Moodle 2.5
+     * @deprecated since 2.6 See MDL-30085. Please do not use this class any more.
+     * @see core_grading_external
+     */
     public static function get_definitions($cmids, $areaname, $activeonly = false) {
-        return core_grading_external::get_definitions($cmids, $areaname, $activeonly = false);
+        throw new deprecated_external_function('core_grading_get_definitions');
     }
 
     public static function get_definitions_returns() {

@@ -396,21 +396,13 @@ class moodle_file_external extends external_api {
     }
 
     /**
-     * Return moodle files listing
-     *
-     * @param int $contextid
-     * @param int $component
-     * @param int $filearea
-     * @param int $itemid
-     * @param string $filepath
-     * @param string $filename
-     * @return array
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_files_external::get_files()
      */
     public static function get_files($contextid, $component, $filearea, $itemid, $filepath, $filename) {
-        return core_files_external::get_files($contextid, $component, $filearea, $itemid, $filepath, $filename);
+        throw new deprecated_external_function('core_files_get_files');
     }
 
     /**
@@ -438,22 +430,13 @@ class moodle_file_external extends external_api {
     }
 
     /**
-     * Uploading a file to moodle
-     *
-     * @param int $contextid
-     * @param string $component
-     * @param string $filearea
-     * @param int $itemid
-     * @param string $filepath
-     * @param string $filename
-     * @param string $filecontent
-     * @return array
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_files_external::upload()
      */
     public static function upload($contextid, $component, $filearea, $itemid, $filepath, $filename, $filecontent) {
-        return core_files_external::upload($contextid, $component, $filearea, $itemid, $filepath, $filename, $filecontent);
+        throw new deprecated_external_function('core_files_upload');
     }
 
     /**

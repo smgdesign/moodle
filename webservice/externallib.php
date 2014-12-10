@@ -232,18 +232,13 @@ class moodle_webservice_external extends external_api {
     }
 
     /**
-     * Return user information including profile picture + basic site information
-     * Note:
-     * - no capability checking because we return just known information by logged user
-     *
-     * @param array $serviceshortnames of service shortnames - the functions of these services will be returned
-     * @return array
+     * @throws deprecated_external_function
      * @deprecated Moodle 2.2 - please do not use this function any more.
      * @see core_webservice_external::get_site_info
      * @since Moodle 2.1
      */
     public function get_siteinfo($serviceshortnames = array()) {
-        return core_webservice_external::get_site_info($serviceshortnames);
+        throw new deprecated_external_function('core_webservice_get_site_info');
     }
 
     /**

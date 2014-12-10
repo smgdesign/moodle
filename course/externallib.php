@@ -1931,16 +1931,13 @@ class moodle_course_external extends external_api {
     }
 
     /**
-     * Get courses
-     *
-     * @param array $options
-     * @return array
+     * @throws deprecated_external_functions
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_course_external::get_courses()
      */
     public static function get_courses($options) {
-        return core_course_external::get_courses($options);
+        throw new deprecated_external_function('core_course_get_courses');
     }
 
     /**
@@ -1968,16 +1965,13 @@ class moodle_course_external extends external_api {
     }
 
     /**
-     * Create  courses
-     *
-     * @param array $courses
-     * @return array courses (id and shortname only)
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_course_external::create_courses()
      */
     public static function create_courses($courses) {
-        return core_course_external::create_courses($courses);
+        throw new deprecated_external_function('core_course_create_courses');
     }
 
     /**

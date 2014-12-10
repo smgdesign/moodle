@@ -490,18 +490,13 @@ class moodle_notes_external extends external_api {
     }
 
     /**
-     * Create notes about some users
-     * Note: code should be matching the /notes/edit.php checks
-     * and the /user/addnote.php checks. (they are similar cheks)
-     *
-     * @param array $notes  An array of notes to create.
-     * @return array (success infos and fail infos)
+     * @throws deprecated_external_function
      * @since Moodle 2.1
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_notes_external::create_notes()
      */
     public static function create_notes($notes = array()) {
-        return core_notes_external::create_notes($notes);
+        throw new deprecated_external_function('core_notes_create_notes');
     }
 
     /**

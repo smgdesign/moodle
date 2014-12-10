@@ -816,16 +816,13 @@ class moodle_message_external extends external_api {
     }
 
     /**
-     * Send private messages from the current USER to other users
-     *
-     * @param array $messages An array of message to send.
-     * @return array
+     * @throws deprecated_external_function
      * @since Moodle 2.1
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_message_external::send_instant_messages()
      */
     public static function send_instantmessages($messages = array()) {
-        return core_message_external::send_instant_messages($messages);
+        throw new deprecated_external_function('core_message_send_instant_messages');
     }
 
     /**

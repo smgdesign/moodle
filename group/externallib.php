@@ -1181,16 +1181,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Create groups
-     *
-     * @param array $groups array of group description arrays (with keys groupname and courseid)
-     * @return array of newly created groups
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see use core_group_external::create_groups()
      */
     public static function create_groups($groups) {
-        return core_group_external::create_groups($groups);
+        throw new deprecated_external_function('core_group_create_groups');
     }
 
     /**
@@ -1218,16 +1215,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Get groups definition specified by ids
-     *
-     * @param array $groupids arrays of group ids
-     * @return array of group objects (id, courseid, name, enrolmentkey)
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_group_external::get_groups()
      */
     public static function get_groups($groupids) {
-        return core_group_external::get_groups($groupids);
+        throw new deprecated_external_function('core_group_get_groups');
     }
 
     /**
@@ -1255,16 +1249,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Get all groups in the specified course
-     *
-     * @param int $courseid id of course
-     * @return array of group objects (id, courseid, name, enrolmentkey)
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_group_external::get_course_groups()
      */
     public static function get_course_groups($courseid) {
-        return core_group_external::get_course_groups($courseid);
+        throw new deprecated_external_function('core_group_get_course_groups');
     }
 
     /**
@@ -1292,15 +1283,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Delete groups
-     *
-     * @param array $groupids array of group ids
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_group_external::delete_groups()
      */
     public static function delete_groups($groupids) {
-        return core_group_external::delete_groups($groupids);
+        throw new deprecated_external_function('core_group_delete_groups');
     }
 
     /**
@@ -1329,16 +1318,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Return all members for a group
-     *
-     * @param array $groupids array of group ids
-     * @return array with  group id keys containing arrays of user ids
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_group_external::get_group_members()
      */
     public static function get_groupmembers($groupids) {
-        return core_group_external::get_group_members($groupids);
+        throw new deprecated_external_function('core_group_get_group_members');
     }
 
     /**
@@ -1367,15 +1353,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Add group members
-     *
-     * @param array $members of arrays with keys userid, groupid
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see use core_group_external::add_group_members()
      */
     public static function add_groupmembers($members) {
-        return core_group_external::add_group_members($members);
+        throw new deprecated_external_function('core_group_add_group_members');
     }
 
     /**
@@ -1404,15 +1388,13 @@ class moodle_group_external extends external_api {
     }
 
     /**
-     * Delete group members
-     *
-     * @param array $members of arrays with keys userid, groupid
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_group_external::delete_group_members()
      */
     public static function delete_groupmembers($members) {
-        return core_group_external::delete_group_members($members);
+        throw new deprecated_external_function('core_group_delete_group_members');
     }
 
     /**

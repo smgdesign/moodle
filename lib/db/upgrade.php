@@ -4113,5 +4113,31 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2014120102.00);
     }
 
+    if ($oldversion < 2014121200.00) {
+
+        // The deprecated web services are all contained in these two components.
+        $components = array(
+            'moodle' => 'lib/db/services.php',
+            'enrol_manual' => 'enrol/manual/db/services.php'
+        );
+        // Pity we can't use external_update_descriptions() in an upgrade script.
+        foreach ($components as $component => $path) {
+
+            // Include functions and services.
+            include($CFG->dirroot . '/' . $path);
+
+            $dbfunctions = $DB->get_records('external_functions', array('component' => $component));
+            foreach ($dbfunctions as $dbfunction) {
+                $dbfunction->classname = $function['classname'];
+                $dbfunction->methodname = $function['methodname'];
+                $dbfunction->classpath = $function['classpath'];
+                $dbfunction->description = $function['description'];
+                $DB->update_record('external_functions', $dbfunction);
+            }
+        }
+
+        upgrade_main_savepoint(true, 2014121200.00);
+    }
+
     return true;
 }
