@@ -183,16 +183,13 @@ class moodle_enrol_manual_external extends external_api {
     }
 
     /**
-     * Enrolment of users
-     * Function throw an exception at the first error encountered.
-     *
-     * @param array $enrolments  An array of user enrolment
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see enrol_manual_external::enrol_users()
      */
     public static function manual_enrol_users($enrolments) {
-        return enrol_manual_external::enrol_users($enrolments);
+        throw new deprecated_external_function('enrol_manual_enrol_users');
     }
 
     /**

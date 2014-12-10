@@ -729,61 +729,13 @@ class core_user_external extends external_api {
     }
 
     /**
-     * Get user information
-     * - This function is matching the permissions of /user/profil.php
-     * - It is also matching some permissions from /user/editadvanced.php for the following fields:
-     *   auth, confirmed, idnumber, lang, theme, timezone, mailformat
-     *
-     * @param array $userids  array of user ids
-     * @return array An array of arrays describing users
+     * @throws deprecated_external_function
      * @since Moodle 2.2
      * @deprecated Moodle 2.5 MDL-38030 - Please do not call this function any more.
      * @see core_user_external::get_users_by_field()
      */
     public static function get_users_by_id($userids) {
-        global $CFG, $USER, $DB;
-        require_once($CFG->dirroot . "/user/lib.php");
-
-        $params = self::validate_parameters(self::get_users_by_id_parameters(),
-                array('userids' => $userids));
-
-        list($sqluserids, $params) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
-        $uselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
-        $ujoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = u.id AND ctx.contextlevel = :contextlevel)";
-        $params['contextlevel'] = CONTEXT_USER;
-        $usersql = "SELECT u.* $uselect
-                      FROM {user} u $ujoin
-                     WHERE u.id $sqluserids";
-        $users = $DB->get_recordset_sql($usersql, $params);
-
-        $result = array();
-        $hasuserupdatecap = has_capability('moodle/user:update', context_system::instance());
-        foreach ($users as $user) {
-            if (!empty($user->deleted)) {
-                continue;
-            }
-            context_helper::preload_from_record($user);
-            $usercontext = context_user::instance($user->id, IGNORE_MISSING);
-            self::validate_context($usercontext);
-            $currentuser = ($user->id == $USER->id);
-
-            if ($userarray  = user_get_user_details($user)) {
-                // Fields matching permissions from /user/editadvanced.php.
-                if ($currentuser or $hasuserupdatecap) {
-                    $userarray['auth']       = $user->auth;
-                    $userarray['confirmed']  = $user->confirmed;
-                    $userarray['idnumber']   = $user->idnumber;
-                    $userarray['lang']       = $user->lang;
-                    $userarray['theme']      = $user->theme;
-                    $userarray['timezone']   = $user->timezone;
-                    $userarray['mailformat'] = $user->mailformat;
-                }
-                $result[] = $userarray;
-            }
-        }
-        $users->close();
-
-        return $result;
+        throw new deprecated_external_function('core_user_get_users_by_field');
     }
 
     /**
@@ -1177,16 +1129,13 @@ class moodle_user_external extends external_api {
     }
 
     /**
-     * Create one or more users
-     *
-     * @param array $users  An array of users to create.
-     * @return array An array of arrays
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_user_external::create_users()
      */
     public static function create_users($users) {
-        return core_user_external::create_users($users);
+        throw new deprecated_external_function('core_user_create_users');
     }
 
     /**
@@ -1215,16 +1164,13 @@ class moodle_user_external extends external_api {
     }
 
     /**
-     * Delete users
-     *
-     * @param array $userids
-     * @return null
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_user_external::delete_users()
      */
     public static function delete_users($userids) {
-        return core_user_external::delete_users($userids);
+        throw new deprecated_external_function('core_user_delete_users');
     }
 
     /**
@@ -1253,16 +1199,13 @@ class moodle_user_external extends external_api {
     }
 
     /**
-     * Update users
-     *
-     * @param array $users
-     * @return null
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_user_external::update_users()
      */
     public static function update_users($users) {
-        return core_user_external::update_users($users);
+        throw new deprecated_external_function('core_user_update_users');
     }
 
     /**
@@ -1290,19 +1233,13 @@ class moodle_user_external extends external_api {
     }
 
     /**
-     * Get user information
-     * - This function is matching the permissions of /user/profil.php
-     * - It is also matching some permissions from /user/editadvanced.php for the following fields:
-     *   auth, confirmed, idnumber, lang, theme, timezone, mailformat
-     *
-     * @param array $userids  array of user ids
-     * @return array An array of arrays describing users
+     * @throws deprecated_external_function
      * @since Moodle 2.0
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_user_external::get_users_by_id()
      */
     public static function get_users_by_id($userids) {
-        return core_user_external::get_users_by_id($userids);
+        throw new deprecated_external_function('core_user_get_users_by_field');
     }
 
     /**
@@ -1329,16 +1266,13 @@ class moodle_user_external extends external_api {
     }
 
     /**
-     * Get course participant's details
-     *
-     * @param array $userlist  array of user ids and according course ids
-     * @return array An array of arrays describing course participants
+     * @throws deprecated_external_function
      * @since Moodle 2.1
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_user_external::get_course_user_profiles()
      */
     public static function get_course_participants_by_id($userlist) {
-        return core_user_external::get_course_user_profiles($userlist);
+        throw new deprecated_external_function('core_user_get_course_user_profiles');
     }
 
     /**
@@ -1368,23 +1302,15 @@ class moodle_user_external extends external_api {
     }
 
     /**
-     * Get course participants details
-     *
-     * @param int $courseid  course id
-     * @param array $options options {
-     *                                'name' => option name
-     *                                'value' => option value
-     *                               }
-     * @return array An array of users
+     * @throws deprecated_external_function
      * @since Moodle 2.1
      * @deprecated Moodle 2.2 MDL-29106 - Please do not call this function any more.
      * @see core_enrol_external::get_enrolled_users()
      */
     public static function get_users_by_courseid($courseid, $options) {
-        global $CFG;
-        require_once($CFG->dirroot . '/enrol/externallib.php');
-        return core_enrol_external::get_enrolled_users($courseid, $options);
+        throw new deprecated_external_function('core_enrol_get_enrolled_users');
     }
+
     /**
      * Returns description of method result value
      *
