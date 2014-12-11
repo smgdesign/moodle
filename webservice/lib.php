@@ -1774,10 +1774,10 @@ abstract class webservice_base_server extends webservice_server {
      */
     protected function execute() {
         // validate params, this also sorts the params properly, we need the correct order in the next part
-        $params = call_user_func(array($this->function->classname, 'validate_parameters'), $this->function->parameters_desc, $this->parameters);
+        //$params = call_user_func(array($this->function->classname, 'validate_parameters'), $this->function->parameters_desc, $this->parameters);
 
         // execute - yay!
-        $this->returns = call_user_func_array(array($this->function->classname, $this->function->methodname), array_values($params));
+        $this->returns = call_user_func_array(array($this->function->classname, $this->function->methodname), array_values(array()));
     }
 }
 
