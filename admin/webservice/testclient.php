@@ -54,10 +54,12 @@ foreach ($allfunctions as $f) {
         //some plugins may want to have own test client forms
         include_once($CFG->dirroot.'/'.$finfo->testclientpath);
     }
-    $class = $f->name.'_form';
-    if (class_exists($class)) {
-        $functions[$f->name] = $f->name;
-        continue;
+    if (empty($finfo->deprecated)) {
+        $class = $f->name.'_form';
+        if (class_exists($class)) {
+            $functions[$f->name] = $f->name;
+            continue;
+        }
     }
 }
 

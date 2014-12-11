@@ -1203,6 +1203,15 @@ class moodle_group_external extends external_api {
     }
 
     /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function create_groups_is_deprecated() {
+        return true;
+    }
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -1234,6 +1243,15 @@ class moodle_group_external extends external_api {
      */
     public static function get_groups_returns() {
         return core_group_external::get_groups_returns();
+    }
+
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function get_groups_is_deprecated() {
+        return true;
     }
 
     /**
@@ -1271,6 +1289,15 @@ class moodle_group_external extends external_api {
     }
 
     /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function get_course_groups_is_deprecated() {
+        return true;
+    }
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -1304,6 +1331,14 @@ class moodle_group_external extends external_api {
         return core_group_external::delete_group_members_returns();
     }
 
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function delete_groups_is_deprecated() {
+        return true;
+    }
 
     /**
      * Returns description of method parameters
@@ -1339,6 +1374,14 @@ class moodle_group_external extends external_api {
         return core_group_external::get_group_members_returns();
     }
 
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function get_groupmembers_is_deprecated() {
+        return true;
+    }
 
     /**
      * Returns description of method parameters
@@ -1374,6 +1417,14 @@ class moodle_group_external extends external_api {
         return core_group_external::add_group_members_returns();
     }
 
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function add_groupmembers_is_deprecated() {
+        return true;
+    }
 
     /**
      * Returns description of method parameters
@@ -1409,4 +1460,12 @@ class moodle_group_external extends external_api {
         return core_group_external::delete_group_members_returns();
     }
 
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function delete_groupmembers_is_deprecated() {
+        return true;
+    }
 }
