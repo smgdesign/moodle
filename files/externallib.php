@@ -418,6 +418,15 @@ class moodle_file_external extends external_api {
     }
 
     /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function get_files_is_deprecated() {
+        return true;
+    }
+
+    /**
      * Returns description of upload parameters
      *
      * @return external_function_parameters
@@ -450,4 +459,14 @@ class moodle_file_external extends external_api {
     public static function upload_returns() {
         return core_files_external::upload_returns();
     }
+
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function upload_is_deprecated() {
+        return true;
+    }
+
 }

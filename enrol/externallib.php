@@ -839,6 +839,15 @@ class moodle_enrol_external extends external_api {
     }
 
     /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function get_enrolled_users_is_deprecated() {
+        return true;
+    }
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -872,6 +881,14 @@ class moodle_enrol_external extends external_api {
         return core_enrol_external::get_users_courses_returns();
     }
 
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function get_users_courses_is_deprecated() {
+        return true;
+    }
 
     /**
      * Returns description of method parameters
@@ -907,6 +924,14 @@ class moodle_enrol_external extends external_api {
         return core_role_external::assign_roles_returns();
     }
 
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function role_assign_is_deprecated() {
+        return true;
+    }
 
     /**
      * Returns description of method parameters
@@ -930,7 +955,7 @@ class moodle_enrol_external extends external_api {
         throw new deprecated_external_function('core_role_unassign_role');
     }
 
-   /**
+    /**
      * Returns description of method result value
      *
      * @return null
@@ -941,4 +966,14 @@ class moodle_enrol_external extends external_api {
     public static function role_unassign_returns() {
         return core_role_external::unassign_roles_returns();
     }
+
+    /**
+     * Marking the method as deprecated.
+     *
+     * @return bool
+     */
+    public static function role_unassign_is_deprecated() {
+        return true;
+    }
+
 }

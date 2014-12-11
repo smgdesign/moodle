@@ -33,7 +33,10 @@ admin_externalpage_setup('webservicedocumentation');
 $functions = $DB->get_records('external_functions', array(), 'name');
 $functiondescs = array();
 foreach ($functions as $function) {
-    $functiondescs[$function->name] = external_function_info($function);
+    $finfo = external_function_info($function);
+    if (empty($finfo->deprecated)) {
+        $functiondescs[$function->name] = $finfo;
+    }
 }
 
 //display the documentation for all documented protocols,
