@@ -25,6 +25,7 @@
 $string['browserepositories'] = 'Browse repositories...';
 $string['createlink'] = 'Create link';
 $string['enterurl'] = 'Enter a URL';
+$string['missinghttp'] = 'The provided url should be prefixed with http:// or the applicable protocol.';
 $string['openinnewwindow'] = 'Open in new window';
 $string['pluginname'] = 'Link';
 $string['unlink'] = 'Unlink';
