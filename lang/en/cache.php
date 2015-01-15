@@ -47,6 +47,7 @@ $string['cachedef_databasemeta'] = 'Database meta information';
 $string['cachedef_eventinvalidation'] = 'Event invalidation';
 $string['cachedef_externalbadges'] = 'External badges for particular user';
 $string['cachedef_suspended_userids'] = 'List of suspended users per course';
+$string['cachedef_gradecategories'] = 'List of grade categories';
 $string['cachedef_gradecondition'] = 'User grades cached for evaluating conditional availability';
 $string['cachedef_groupdata'] = 'Course group information';
 $string['cachedef_htmlpurifier'] = 'HTML Purifier - cleaned content';
