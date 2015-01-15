@@ -479,6 +479,9 @@ abstract class moodle_database {
         $key = md5($this->last_sql . $paramsstr);
         if (!empty($this->queries[$key])) {
             $this->repeateddbreads++;
+            if (!empty($this->dboptions['showrepeated']) && !CLI_SCRIPT) {
+                debugging($this->last_sql . var_dump($this->last_params));
+            }
         } else {
             $this->queries[$key] = $key;
         }
