@@ -44,7 +44,6 @@ class select extends screen {
      * @param bool $selfitemisempty Has an item been selected (will be false)
      */
     public function init($selfitemisempty = false) {
-        global $DB;
 
         $roleids = explode(',', get_config('moodle', 'gradebookroles'));
 
@@ -57,7 +56,7 @@ class select extends screen {
                 $this->perpage * $this->page, $this->perpage
             );
         }
-        $this->item = $DB->get_record('course', array('id' => $this->courseid));
+        $this->item = get_course($this->courseid);
     }
 
     /**

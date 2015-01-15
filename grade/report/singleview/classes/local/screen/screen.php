@@ -72,14 +72,13 @@ abstract class screen {
      * @param int $groupid The group id
      */
     public function __construct($courseid, $itemid, $groupid = null) {
-        global $DB;
 
         $this->courseid = $courseid;
         $this->itemid = $itemid;
         $this->groupid = $groupid;
 
         $this->context = context_course::instance($this->courseid);
-        $this->course = $DB->get_record('course', array('id' => $courseid));
+        $this->course = get_course($courseid);
 
         $this->page = optional_param('page', 0, PARAM_INT);
         $this->perpage = optional_param('perpage', 100, PARAM_INT);

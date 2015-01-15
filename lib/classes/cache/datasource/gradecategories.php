@@ -89,7 +89,7 @@ class gradecategories implements \cache_data_source {
     /**
      * Loads the data for the key provided ready formatted for caching.
      *
-     * @param int The grade category id.
+     * @param int $key The grade category id.
      * @return \grade_category|bool The \grade_category object or false if it can't be loaded.
      */
     public function load_for_cache($key) {
@@ -103,7 +103,7 @@ class gradecategories implements \cache_data_source {
     /**
      * Loads several keys for the cache.
      *
-     * @param array The grade category ids
+     * @param array $keys The grade category ids
      * @return array|bool The grade categories or false if it can't be loaded.
      */
     public function load_many_for_cache(array $keys) {
