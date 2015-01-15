@@ -9008,8 +9008,11 @@ function get_performance_info() {
     $info['txt'] .= 'db queries time: ' . $info['dbtime'] . 's ';
 
     // Repeated db reads.
-    $info['txt'] .= 'repeated db reads: ' . $DB->perf_get_repeated_db_reads() . ' ';
-    $info['html'] .= '<span class="repeateddbreads">Repeated DB reads: ' . $DB->perf_get_repeated_db_reads() . '</span>';
+    list($nrepeatedreads, $queriesfilepath) = $DB->perf_get_repeated_db_reads();
+    $info['txt'] .= 'repeated db reads: ' . $nrepeatedreads . ' ' .
+        'repeated queries file: ' . $queriesfilepath;
+    $info['html'] .= '<span class="repeateddbreads">Repeated DB reads: ' . $nrepeatedreads . '</span>' .
+        '<span class="repeateddbreadsfile">' . $queriesfilepath . '</span>';
 
     if (function_exists('posix_times')) {
         $ptimes = posix_times();

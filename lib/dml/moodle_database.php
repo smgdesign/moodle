@@ -470,20 +470,26 @@ abstract class moodle_database {
         // Will be shown or not depending on MDL_PERF values rather than in dboptions['log*].
         $this->queriestime = $this->queriestime + $time;
 
-        // Save a hash including params.
-        $paramsstr = '';
-        if ($this->last_params) {
-            ksort($this->last_params);
-            $paramsstr = json_encode($this->last_params);
-        }
-        $key = md5($this->last_sql . $paramsstr);
-        if (!empty($this->queries[$key])) {
-            $this->repeateddbreads++;
-            if (!empty($this->dboptions['showrepeated']) && !CLI_SCRIPT) {
-                debugging($this->last_sql . var_dump($this->last_params));
+        if ($this->last_type === SQL_QUERY_SELECT) {
+            // Save a hash including params.
+            $paramsstr = '';
+            if ($this->last_params) {
+                ksort($this->last_params);
+                $paramsstr = json_encode($this->last_params);
             }
-        } else {
-            $this->queries[$key] = $key;
+            $key = md5($this->last_sql . $paramsstr);
+            if (empty($this->queries[$key])) {
+                $this->queries[$key] = new stdClass();
+                $this->queries[$key]->ncalls = 1;
+                $this->queries[$key]->sql = $this->last_sql;
+                $this->queries[$key]->params = $this->last_params;
+            } else {
+                $this->repeateddbreads++;
+                $this->queries[$key]->ncalls++;
+                if (!empty($this->dboptions['showrepeated']) && !CLI_SCRIPT) {
+                    debugging($this->last_sql . var_dump($this->last_params));
+                }
+            }
         }
 
         if ($logall or ($logslow and ($logslow < ($time+0.00001))) or ($iserror and $logerrors)) {
@@ -2576,6 +2582,23 @@ abstract class moodle_database {
     }
 
     public function perf_get_repeated_db_reads() {
-        return $this->repeateddbreads;
+        global $CFG;
+
+        $filepath = false;
+        if (!empty($CFG->dboptions['storerepeated_path']) && count($this->queries) > 0) {
+            $queriesinfo = array();
+            foreach ($this->queries as $query) {
+                if ($query->ncalls > 1) {
+                    $queriesinfo[] = $query->ncalls . ' times called: ' . $query->sql .
+                        ', params: ' . implode(', ', $query->params);
+                }
+            }
+            // Just one per second, as there are duplicated files and I don't want to spend
+            // time looking for a solution, probably is because of a moodle generated file.
+            $filepath = $CFG->dboptions['storerepeated_path'] . DIRECTORY_SEPARATOR .
+                time() . '.txt';
+            file_put_contents($filepath, implode(PHP_EOL, $queriesinfo), FILE_APPEND);
+        }
+        return array($this->repeateddbreads, $filepath);
     }
 }
