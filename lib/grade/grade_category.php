@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('grade_object.php');
+require_once(__DIR__ . '/grade_object.php');
 
 /**
  * grade_category is an object mapped to DB table {prefix}grade_categories
@@ -170,13 +170,11 @@ class grade_category extends grade_object {
      * @return string The category's path string
      */
     public static function build_path($grade_category) {
-        global $DB;
-
         if (empty($grade_category->parent)) {
             return '/'.$grade_category->id.'/';
 
         } else {
-            $parent = $DB->get_record('grade_categories', array('id' => $grade_category->parent));
+            $parent = \core\cache\datasource\gradecategories::get($grade_category->parent, false);
             return grade_category::build_path($parent).$grade_category->id.'/';
         }
     }
@@ -397,7 +395,7 @@ class grade_category extends grade_object {
             return false;
         }
 
-        $db_item = grade_category::fetch(array('id'=>$this->id));
+        $db_item = \core\cache\datasource\gradecategories::get($this->id);
 
         $aggregationdiff = $db_item->aggregation         != $this->aggregation;
         $keephighdiff    = $db_item->keephigh            != $this->keephigh;
@@ -2127,8 +2125,7 @@ class grade_category extends grade_object {
      */
     public function get_parent_category() {
         if (!empty($this->parent)) {
-            $parent_category = new grade_category(array('id' => $this->parent));
-            return $parent_category;
+            return \core\cache\datasource\gradecategories::get($this->parent);
         } else {
             return null;
         }
@@ -2140,12 +2137,10 @@ class grade_category extends grade_object {
      * @return string name
      */
     public function get_name() {
-        global $DB;
         // For a course category, we return the course name if the fullname is set to '?' in the DB (empty in the category edit form)
         if (empty($this->parent) && $this->fullname == '?') {
-            $course = $DB->get_record('course', array('id'=> $this->courseid));
+            $course = get_course($this->courseid, false);
             return format_string($course->fullname);
-
         } else {
             return $this->fullname;
         }
@@ -2198,8 +2193,9 @@ class grade_category extends grade_object {
             print_error('cannothaveparentcate');
         }
 
-        // find parent and check course id
-        if (!$parent_category = grade_category::fetch(array('id'=>$parentid, 'courseid'=>$this->courseid))) {
+        // Find parent and check course id.
+        $parent_category = \core\cache\datasource\gradecategories::get($parentid);
+        if ($parent_category->courseid != $this->courseid) {
             return false;
         }
 
@@ -2445,13 +2441,10 @@ class grade_category extends grade_object {
 
         //if marking category visible make sure parent category is visible MDL-21367
         if( !$hidden ) {
-            $category_array = grade_category::fetch_all(array('id'=>$this->parent));
-            if ($category_array && array_key_exists($this->parent, $category_array)) {
-                $category = $category_array[$this->parent];
-                //call set_hidden on the category regardless of whether it is hidden as its parent might be hidden
-                //if($category->is_hidden()) {
-                    $category->set_hidden($hidden, false);
-                //}
+            $parentcategory = \core\cache\datasource\gradecategories::get($this->parent);
+            if ($parentcategory) {
+                // Call set_hidden on the category regardless of whether it is hidden as its parent might be hidden.
+                $parentcategory->set_hidden($hidden, false);
             }
         }
     }
@@ -2512,5 +2505,17 @@ class grade_category extends grade_object {
         $params = array(1, 'course', 'category');
         $sql = "UPDATE {grade_items} SET needsupdate=? WHERE itemtype=? or itemtype=?";
         $DB->execute($sql, $params);
+    }
+
+    /**
+     * Cleans the cache.
+     *
+     * If the change is an insert will not uncache anything.
+     *
+     * @param bool $deleted
+     * @return void
+     */
+    protected function notify_changed($deleted) {
+        \core\cache\datasource\gradecategories::uncache($this->id);
     }
 }

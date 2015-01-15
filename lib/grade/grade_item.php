@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once('grade_object.php');
+require_once(__DIR__ . '/grade_object.php');
 
 /**
  * Class representing a grade item.
@@ -609,13 +609,10 @@ class grade_item extends grade_object {
 
         //if marking item visible make sure category is visible MDL-21367
         if( !$hidden ) {
-            $category_array = grade_category::fetch_all(array('id'=>$this->categoryid));
-            if ($category_array && array_key_exists($this->categoryid, $category_array)) {
-                $category = $category_array[$this->categoryid];
-                //call set_hidden on the category regardless of whether it is hidden as its parent might be hidden
-                //if($category->is_hidden()) {
-                    $category->set_hidden($hidden, false);
-                //}
+            $category = \core\cache\datasource\gradecategories::get($this->categoryid);
+            if ($category) {
+                // Call set_hidden on the category regardless of whether it is hidden as its parent might be hidden.
+                $category->set_hidden($hidden, false);
             }
         }
     }
@@ -874,9 +871,8 @@ class grade_item extends grade_object {
     public function get_parent_category() {
         if ($this->is_category_item() or $this->is_course_item()) {
             return $this->get_item_category();
-
         } else {
-            return grade_category::fetch(array('id'=>$this->categoryid));
+            return \core\cache\datasource\gradecategories::get($this->categoryid);
         }
     }
 
@@ -902,7 +898,7 @@ class grade_item extends grade_object {
         if (!$this->is_course_item() and !$this->is_category_item()) {
             return false;
         }
-        return grade_category::fetch(array('id'=>$this->iteminstance));
+        return \core\cache\datasource\gradecategories::get($this->iteminstance);
     }
 
     /**
@@ -1330,8 +1326,9 @@ class grade_item extends grade_object {
             return true;
         }
 
-        // find parent and check course id
-        if (!$parent_category = grade_category::fetch(array('id'=>$parentid, 'courseid'=>$this->courseid))) {
+        // Find parent and check course id.
+        $parent_category = \core\cache\datasource\gradecategories::get($parentid);
+        if ($parent_category->courseid != $this->courseid) {
             return false;
         }
 

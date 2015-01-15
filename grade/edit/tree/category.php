@@ -55,7 +55,8 @@ $returnurl = $gpr->get_return_url('index.php?id='.$course->id);
 $heading = get_string('categoryedit', 'grades');
 
 if ($id) {
-    if (!$grade_category = grade_category::fetch(array('id'=>$id, 'courseid'=>$course->id))) {
+    $grade_category = \core\cache\datasource\gradecategories::get($id);
+    if ($grade_category->courseid != $course->id) {
         print_error('invalidcategory');
     }
     $grade_category->apply_forced_settings();

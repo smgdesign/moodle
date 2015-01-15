@@ -230,4 +230,16 @@ $definitions = array(
         'simplekeys' => true,
         'simpledata' => true,
     ),
+
+    // Caches grade categories.
+    // The key is the grade_categories id.
+    'gradecategories' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true, // The grade category id.
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 10, // Most of the courses will probably have less than 10 cats.
+        'datasource' => '\core\cache\datasource\gradecategories',
+        'datasourcefile' => 'lib/classes/cache/datasource/gradecategories.php',
+    ),
 );

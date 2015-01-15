@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('grade_object.php');
+require_once(__DIR__ . '/grade_object.php');
 
 /**
  * Class representing a grade outcome.

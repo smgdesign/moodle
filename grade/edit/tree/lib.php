@@ -184,7 +184,7 @@ class grade_edit_tree {
         if ($element['type'] == 'category') {
             $level++;
             $this->categories[$object->id] = $object->stripped_name;
-            $category = grade_category::fetch(array('id' => $object->id));
+            $category = \core\cache\datasource\gradecategories::get($object->id);
             $item = $category->get_grade_item();
 
             // Add aggregation coef input if not a course item and if parent category has correct aggregation type

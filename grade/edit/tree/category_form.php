@@ -302,7 +302,7 @@ class edit_category_form extends moodleform {
         }
 
         if ($id = $mform->getElementValue('id')) {
-            $grade_category = grade_category::fetch(array('id'=>$id));
+            $grade_category = \core\cache\datasource\gradecategories::get($id);
             $grade_item = $grade_category->load_grade_item();
 
             // remove agg coef if not used
@@ -408,7 +408,7 @@ class edit_category_form extends moodleform {
 
 /// GRADE ITEM
         if ($id = $mform->getElementValue('id')) {
-            $grade_category = grade_category::fetch(array('id'=>$id));
+            $grade_category = \core\cache\datasource\gradecategories::get($id);
             $grade_item = $grade_category->load_grade_item();
 
             $mform->setDefault('grade_item_hidden', (int) $grade_item->hidden);

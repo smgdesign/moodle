@@ -55,7 +55,8 @@ $returnurl = $gpr->get_return_url(null);
 
 // Change category aggregation if requested
 if (!is_null($category) && !is_null($aggregationtype) && confirm_sesskey()) {
-    if (!$grade_category = grade_category::fetch(array('id'=>$category, 'courseid'=>$courseid))) {
+    $grade_category = \core\cache\datasource\gradecategories::get($category);
+    if ($grade_category->courseid != $courseid) {
         print_error('invalidcategoryid');
     }
 
