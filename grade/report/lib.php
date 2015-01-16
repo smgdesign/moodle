@@ -460,7 +460,7 @@ abstract class grade_report {
         }
 
         if (!$hiding_affected) {
-            $items = grade_item::fetch_all(array('courseid'=>$courseid));
+            $items = \core\cache\datasource\gradeitems::get($courseid);
             $grades = array();
             $sql = "SELECT g.*
                       FROM {grade_grades} g

@@ -54,7 +54,7 @@ navigation_node::override_active_url(new moodle_url('/grade/edit/tree/index.php'
 $gpr = new grade_plugin_return();
 $returnurl = $gpr->get_return_url($CFG->wwwroot.'/grade/report/index.php?id='.$course->id);
 
-if (!$grade_item = grade_item::fetch(array('id'=>$id, 'courseid'=>$course->id))) {
+if (!$grade_item = \core\cache\datasource\gradeitems::get_item($id, $course->id)) {
     print_error('invaliditemid');
 }
 

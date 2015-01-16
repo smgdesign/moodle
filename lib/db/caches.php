@@ -242,4 +242,16 @@ $definitions = array(
         'datasource' => '\core\cache\datasource\gradecategories',
         'datasourcefile' => 'lib/classes/cache/datasource/gradecategories.php',
     ),
+
+    // Caches grade items.
+    // The key is the grade_items course id.
+    'gradeitems' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true, // The grade item course id.
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 1, // Store the grade items of just one course.
+        'datasource' => '\core\cache\datasource\gradeitems',
+        'datasourcefile' => 'lib/classes/cache/datasource/gradeitems.php'
+    )
 );

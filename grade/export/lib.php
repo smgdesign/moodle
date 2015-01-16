@@ -77,7 +77,7 @@ abstract class grade_export {
         $this->course = $course;
         $this->groupid = $groupid;
 
-        $this->grade_items = grade_item::fetch_all(array('courseid'=>$this->course->id));
+        $this->grade_items = \core\cache\datasource\gradeitems::get($this->course->id);
 
         $this->process_form($formdata);
     }
@@ -106,7 +106,7 @@ abstract class grade_export {
         $this->course = $course;
         $this->groupid = $groupid;
 
-        $this->grade_items = grade_item::fetch_all(array('courseid'=>$this->course->id));
+        $this->grade_items = \core\cache\datasource\gradeitems::get($this->course->id);
         //Populating the columns here is required by /grade/export/(whatever)/export.php
         //however index.php, when the form is submitted, will construct the collection here
         //with an empty $itemlist then reconstruct it in process_form() using $formdata

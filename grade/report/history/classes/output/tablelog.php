@@ -100,7 +100,7 @@ class tablelog extends \table_sql implements \renderable {
         $this->pagesize = $perpage;
         $this->page = $page;
         $this->filters = (object)$filters;
-        $this->gradeitems = \grade_item::fetch_all(array('courseid' => $this->courseid));
+        $this->gradeitems = \core\cache\datasource\gradeitems::get($this->courseid);
         $this->cms = get_fast_modinfo($this->courseid);
         $this->useridfield = 'userid';
         $this->defaultdecimalpoints = grade_get_setting($this->courseid, 'decimalpoints', $CFG->grade_decimalpoints);

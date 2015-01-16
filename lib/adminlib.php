@@ -4730,6 +4730,8 @@ class admin_setting_regradingcheckbox extends admin_setting_configcheckbox {
         if ($oldvalue !== $newvalue) {
         // force full regrading
             $DB->set_field('grade_items', 'needsupdate', 1, array('needsupdate'=>0));
+
+            \core\cache\datasource\gradeitems::uncache();
         }
 
         return $return;

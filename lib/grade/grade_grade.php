@@ -229,11 +229,11 @@ class grade_grade extends grade_object {
         }
 
         if (empty($this->grade_item)) {
-            $this->grade_item = grade_item::fetch(array('id'=>$this->itemid));
-
+            // Unefficient call, most of the time this function is called multiple times.
+            $this->grade_item = \core\cache\datasource\gradeitems::get_item($this->itemid);
         } else if ($this->grade_item->id != $this->itemid) {
             debugging('Itemid mismatch');
-            $this->grade_item = grade_item::fetch(array('id'=>$this->itemid));
+            $this->grade_item = \core\cache\datasource\gradeitems::get_item($this->itemid);
         }
 
         return $this->grade_item;

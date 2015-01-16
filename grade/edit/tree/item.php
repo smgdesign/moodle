@@ -54,7 +54,7 @@ $returnurl = $gpr->get_return_url('index.php?id='.$course->id);
 
 $heading = get_string('itemsedit', 'grades');
 
-if ($grade_item = grade_item::fetch(array('id'=>$id, 'courseid'=>$courseid))) {
+if ($grade_item = \core\cache\datasource\gradeitems::get_item($id, $courseid)) {
     // redirect if outcomeid present
     if (!empty($grade_item->outcomeid) && !empty($CFG->enableoutcomes)) {
         $url = $CFG->wwwroot.'/grade/edit/tree/outcomeitem.php?id='.$id.'&amp;courseid='.$courseid;
