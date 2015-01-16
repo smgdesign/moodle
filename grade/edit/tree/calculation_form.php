@@ -39,7 +39,7 @@ class edit_calculation_form extends moodleform {
 
         $itemid = $this->_customdata['itemid'];
 
-        $this->available = grade_item::fetch_all(array('courseid'=>$COURSE->id));
+        $this->available = \core\cache\datasource\gradeitems::get($COURSE->id);
         $this->noidnumbers = array();
 
         // All items that have no idnumbers are added to a separate section of the form (hidden by default),
@@ -92,7 +92,7 @@ class edit_calculation_form extends moodleform {
 
         // check the calculation formula
         if ($data['calculation'] != '') {
-            $grade_item = grade_item::fetch(array('id'=>$data['id'], 'courseid'=>$data['courseid']));
+            $grade_item = \core\cache\datasource\gradeitems::get_item($data['id'], $data['courseid']);
             $calculation = calc_formula::unlocalize(stripslashes($data['calculation']));
             $result = $grade_item->validate_formula($calculation);
             if ($result !== true) {

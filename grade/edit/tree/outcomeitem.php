@@ -60,7 +60,7 @@ if ($mform->is_cancelled() || empty($CFG->enableoutcomes)) {
 
 $heading = get_string('outcomeitemsedit', 'grades');
 
-if ($grade_item = grade_item::fetch(array('id'=>$id, 'courseid'=>$courseid))) {
+if ($grade_item = \core\cache\datasource\gradeitems::get_item($id, $courseid)) {
     // redirect if outcomeid present
     if (empty($grade_item->outcomeid)) {
         $url = $CFG->wwwroot.'/grade/edit/tree/item.php?id='.$id.'&amp;courseid='.$courseid;

@@ -276,7 +276,7 @@ class grade_category extends grade_object {
                 }
             }
 
-            if ($items = grade_item::fetch_all(array('courseid'=>$this->courseid))) {
+            if ($items = \core\cache\datasource\gradeitems::get($this->courseid)) {
 
                 foreach ($items as $item) {
 
@@ -293,7 +293,7 @@ class grade_category extends grade_object {
             $parent = $this->load_parent_category();
 
             // Update children's categoryid/parent field first
-            if ($children = grade_item::fetch_all(array('categoryid'=>$this->id))) {
+            if ($children = \core\cache\datasource\gradeitems::get($this->courseid, array('categoryid' => $this->id))) {
                 foreach ($children as $child) {
                     $child->set_parent($parent->id);
                 }
@@ -778,7 +778,7 @@ class grade_category extends grade_object {
         global $DB;
 
         // First set them all to weight null and status = 'unknown'.
-        if ($allitems = grade_item::fetch_all(array('categoryid'=>$this->id))) {
+        if ($allitems = \core\cache\datasource\gradeitems::get($this->courseid, array('categoryid' => $this->id))) {
             list($itemsql, $itemlist) = $DB->get_in_or_equal(array_keys($allitems), SQL_PARAMS_NAMED, 'g');
 
             $itemlist['userid'] = $userid;
@@ -1918,7 +1918,7 @@ class grade_category extends grade_object {
         // we have to limit the number of queries though, because it will be used often in grade reports
 
         $cats  = $DB->get_records('grade_categories', array('courseid' => $this->courseid));
-        $items = $DB->get_records('grade_items', array('courseid' => $this->courseid));
+        $items = \core\cache\datasource\gradeitems::get($this->courseid);
 
         // init children array first
         foreach ($cats as $catid=>$cat) {
@@ -2081,14 +2081,15 @@ class grade_category extends grade_object {
         }
 
         if (empty($this->parent)) {
-            $params = array('courseid'=>$this->courseid, 'itemtype'=>'course', 'iteminstance'=>$this->id);
+            $params = array('itemtype'=>'course', 'iteminstance'=>$this->id);
 
         } else {
-            $params = array('courseid'=>$this->courseid, 'itemtype'=>'category', 'iteminstance'=>$this->id);
+            $params = array('itemtype'=>'category', 'iteminstance'=>$this->id);
         }
 
-        if (!$grade_items = grade_item::fetch_all($params)) {
+        if (!$grade_items = \core\cache\datasource\gradeitems::get($this->courseid, $params)) {
             // create a new one
+            $params['courseid'] = $this->courseid;
             $grade_item = new grade_item($params, false);
             $grade_item->gradetype = GRADE_TYPE_VALUE;
             $grade_item->insert('system');
@@ -2343,7 +2344,7 @@ class grade_category extends grade_object {
 
         if ($cascade) {
             //process all children - items and categories
-            if ($children = grade_item::fetch_all(array('categoryid'=>$this->id))) {
+            if ($children = \core\cache\datasource\gradeitems::get($this->courseid, array('categoryid' => $this->id))) {
 
                 foreach ($children as $child) {
                     $child->set_locked($lockedstate, true, false);
@@ -2422,7 +2423,7 @@ class grade_category extends grade_object {
 
         if ($cascade) {
 
-            if ($children = grade_item::fetch_all(array('categoryid'=>$this->id))) {
+            if ($children = \core\cache\datasource\gradeitems::get($this->courseid, array('categoryid' => $this->id))) {
 
                 foreach ($children as $child) {
                     if ($child->can_control_visibility()) {

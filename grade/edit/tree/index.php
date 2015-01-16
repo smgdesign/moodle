@@ -197,13 +197,14 @@ if ($data = data_submitted() and confirm_sesskey()) {
 
     // Update weights (extra credits) on categories and items.
     foreach ($data as $key => $value) {
+
         if (preg_match('/^weight_([0-9]+)$/', $key, $matches)) {
             $aid   = $matches[1];
 
             $value = unformat_float($value);
             $value = clean_param($value, PARAM_FLOAT);
 
-            $grade_item = grade_item::fetch(array('id' => $aid, 'courseid' => $courseid));
+            $grade_item = \core\cache\datasource\gradeitems::get_item($aid, $courseid);
 
             // Convert weight to aggregation coef2.
             $aggcoef = $grade_item->get_coefstring();
@@ -226,7 +227,8 @@ if ($data = data_submitted() and confirm_sesskey()) {
             $aid     = $matches[2];
             $value   = clean_param($value, PARAM_BOOL);
 
-            $grade_item = grade_item::fetch(array('id' => $aid, 'courseid' => $courseid));
+            $grade_item = \core\cache\datasource\gradeitems::get_item($aid, $courseid);
+
             $grade_item->$param = $value;
 
             $grade_item->update();

@@ -104,7 +104,7 @@ class gradeimport_csv_load_data {
      */
     public static function fetch_grade_items($courseid) {
         $gradeitems = null;
-        if ($allgradeitems = grade_item::fetch_all(array('courseid' => $courseid))) {
+        if ($allgradeitems = \core\cache\datasource\gradeitems::get($courseid)) {
             foreach ($allgradeitems as $gradeitem) {
                 // Skip course type and category type.
                 if ($gradeitem->itemtype == 'course' || $gradeitem->itemtype == 'category') {

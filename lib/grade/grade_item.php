@@ -640,8 +640,12 @@ class grade_item extends grade_object {
     public function regrading_finished() {
         global $DB;
         $this->needsupdate = 0;
+
         //do not use $this->update() because we do not want this logged in grade_item_history
         $DB->set_field('grade_items', 'needsupdate', 0, array('id' => $this->id));
+
+        // Forcing uncache here as $this->update() is not being used.
+        \core\cache\datasource\gradeitems::uncache($this->courseid);
     }
 
     /**
@@ -999,8 +1003,8 @@ class grade_item extends grade_object {
      * @return grade_item Course level grade item object
      */
     public static function fetch_course_item($courseid) {
-        if ($course_item = grade_item::fetch(array('courseid'=>$courseid, 'itemtype'=>'course'))) {
-            return $course_item;
+        if ($course_item = \core\cache\datasource\gradeitems::get($courseid, array('itemtype' => 'course'))) {
+            return reset($course_item);
         }
 
         // first get category - it creates the associated grade item
@@ -1084,7 +1088,7 @@ class grade_item extends grade_object {
         // denormalize formula - convert ##giXX## to [[idnumber]]
         if (preg_match_all('/##gi(\d+)##/', $formula, $matches)) {
             foreach ($matches[1] as $id) {
-                if ($grade_item = grade_item::fetch(array('id'=>$id, 'courseid'=>$courseid))) {
+                if ($grade_item = \core\cache\datasource\gradeitems::get_item($id, $courseid)) {
                     if (!empty($grade_item->idnumber)) {
                         $formula = str_replace('##gi'.$grade_item->id.'##', '[['.$grade_item->idnumber.']]', $formula);
                     }
@@ -1112,7 +1116,7 @@ class grade_item extends grade_object {
         }
 
         // normalize formula - we want grade item ids ##giXXX## instead of [[idnumber]]
-        if ($grade_items = grade_item::fetch_all(array('courseid'=>$courseid))) {
+        if ($grade_items = \core\cache\datasource\gradeitems::get($courseid)) {
             foreach ($grade_items as $grade_item) {
                 $formula = str_replace('[['.$grade_item->idnumber.']]', '##gi'.$grade_item->id.'##', $formula);
             }
@@ -2201,5 +2205,8 @@ class grade_item extends grade_object {
         if (!empty($CFG->enableavailability) && class_exists('\availability_grade\callbacks')) {
             \availability_grade\callbacks::grade_item_changed($this->courseid);
         }
+
+        // Clear all course's grade items.
+        \core\cache\datasource\gradeitems::uncache($this->courseid);
     }
 }

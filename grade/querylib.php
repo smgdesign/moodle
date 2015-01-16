@@ -264,11 +264,11 @@ function grade_get_grade_items_for_activity($cm, $only_main_item=false) {
         return false;
     }
 
+    $params = array('itemtype' => 'mod', 'itemmodule' => $cm->modname, 'iteminstance' => $cm->instance);
     if ($only_main_item) {
-        return grade_item::fetch_all(array('itemtype'=>'mod', 'itemmodule'=>$cm->modname, 'iteminstance'=>$cm->instance, 'courseid'=>$cm->course, 'itemnumber'=>0));
-    } else {
-        return grade_item::fetch_all(array('itemtype'=>'mod', 'itemmodule'=>$cm->modname, 'iteminstance'=>$cm->instance, 'courseid'=>$cm->course));
+        $params['itemnumber'] = 0;
     }
+    return \core\cache\datasource\gradeitems::get($cm->course, $params);
 }
 
 /**

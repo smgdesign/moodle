@@ -81,7 +81,7 @@ if (!empty($id)) {
     print_error('missinguseranditemid');
 }
 
-if (!$grade_item = grade_item::fetch(array('id'=>$itemid, 'courseid'=>$courseid))) {
+if (!$grade_item = \core\cache\datasource\gradeitems::get_item($itemid, $courseid)) {
     print_error('cannotfindgradeitem');
 }
 

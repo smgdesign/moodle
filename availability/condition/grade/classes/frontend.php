@@ -45,7 +45,7 @@ class frontend extends \core_availability\frontend {
 
         // Get grades as basic associative array.
         $gradeoptions = array();
-        $items = \grade_item::fetch_all(array('courseid' => $course->id));
+        $items = \core\cache\datasource\gradeitems::get($course->id);
         // For some reason the fetch_all things return null if none.
         $items = $items ? $items : array();
         foreach ($items as $id => $item) {

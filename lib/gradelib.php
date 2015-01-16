@@ -1053,7 +1053,7 @@ function grade_regrade_final_grades($courseid, $userid=null, $updated_item=null)
         }
     }
 
-    $grade_items = grade_item::fetch_all(array('courseid'=>$courseid));
+    $grade_items = \core\cache\datasource\gradeitems::get($courseid);
     $depends_on = array();
 
     // first mark all category and calculated items as needing regrading
