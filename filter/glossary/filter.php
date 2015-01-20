@@ -34,11 +34,11 @@ defined('MOODLE_INTERNAL') || die();
  */
 class filter_glossary extends moodle_text_filter {
     /** @var int $cachecourseid cache invalidation flag in case content from multiple courses displayed. */
-    protected $cachecourseid = null;
+    protected static $cachecourseid = null;
     /** @var int $cacheuserid cache invalidation flag in case user is switched. */
-    protected $cacheuserid = null;
+    protected static $cacheuserid = null;
     /** @var array $cacheconceptlist page level filter cache, this should be always faster than MUC */
-    protected $cacheconceptlist = null;
+    protected static $cacheconceptlist = null;
 
     public function setup($page, $context) {
         if ($page->requires->should_create_one_time_item_now('filter_glossary_autolinker')) {
@@ -62,24 +62,24 @@ class filter_glossary extends moodle_text_filter {
             $courseid = $coursectx->instanceid;
         }
 
-        if ($this->cachecourseid != $courseid or $this->cacheuserid != $USER->id) {
+        if (self::$cachecourseid != $courseid or self::$cacheuserid != $USER->id) {
             // Invalidate the page cache.
-            $this->cacheconceptlist = null;
+            self::$cacheconceptlist = null;
         }
 
-        if (is_array($this->cacheconceptlist) and empty($GLOSSARY_EXCLUDEENTRY)) {
-            if (empty($this->cacheconceptlist)) {
+        if (is_array(self::$cacheconceptlist) and empty($GLOSSARY_EXCLUDEENTRY)) {
+            if (empty(self::$cacheconceptlist)) {
                 return $text;
             }
-            return filter_phrases($text, $this->cacheconceptlist);
+            return filter_phrases($text, self::$cacheconceptlist);
         }
 
         list($glossaries, $allconcepts) = \mod_glossary\local\concept_cache::get_concepts($courseid);
 
         if (!$allconcepts) {
-            $this->cacheuserid = $USER->id;
-            $this->cachecourseid = $courseid;
-            $this->cacheconcepts = array();
+            self::$cacheuserid = $USER->id;
+            self::$cachecourseid = $courseid;
+            self::$cacheconceptlist = array();
             return $text;
         }
 
@@ -131,9 +131,9 @@ class filter_glossary extends moodle_text_filter {
 
         if (!$excluded) {
             // Do not cache the excluded list here, it is used once per page only.
-            $this->cacheuserid = $USER->id;
-            $this->cachecourseid = $courseid;
-            $this->cacheconceptlist = $conceptlist;
+            self::$cacheuserid = $USER->id;
+            self::$cachecourseid = $courseid;
+            self::$cacheconceptlist = $conceptlist;
         }
 
         if (empty($conceptlist)) {
